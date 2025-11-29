@@ -1,0 +1,136 @@
+<body class="font-display">
+  <div
+    class="relative flex min-h-screen w-full flex-col items-center bg-gradient-to-b from-[#1c122b] to-background-dark dark group/design-root overflow-x-hidden p-4 sm:p-6"
+  >
+    <main class="w-full max-w-md mx-auto flex flex-col items-center">
+      <h2 class="text-white tracking-tight text-3xl font-bold leading-tight text-center pb-2 pt-4">
+        Inscrivez-vous
+      </h2>
+      <p class="text-zinc-400 text-base font-normal leading-normal pb-8 text-center">
+        Remplissez vos informations pour participer.
+      </p>
+      <form class="w-full space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <label class="flex flex-col flex-1">
+            <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Prénom</p>
+            <input
+              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30"
+              placeholder="Entrez votre prénom"
+              value=""
+            />
+          </label>
+          <label class="flex flex-col flex-1">
+            <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Nom</p>
+            <input
+              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30"
+              placeholder="Entrez votre nom"
+              value=""
+            />
+          </label>
+        </div>
+        <label class="flex flex-col">
+          <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Email</p>
+          <input
+            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30"
+            placeholder="Entrez votre email"
+            type="email"
+            value=""
+          />
+        </label>
+        <div x-data="{ role: 'participant' }">
+          <div class="space-y-5">
+            <div>
+              <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Rôle</p>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-2">
+                  <label
+                    class="flex items-center p-3 h-12 rounded-lg bg-zinc-900/50 border border-zinc-700 cursor-pointer has-[:checked]:border-accent has-[:checked]:ring-2 has-[:checked]:ring-accent/30 has-[:checked]:bg-primary/20"
+                  >
+                    <input
+                      checked=""
+                      class="form-radio h-4 w-4 text-accent bg-zinc-800 border-zinc-600 focus:ring-accent focus:ring-offset-zinc-900/50"
+                      name="role"
+                      type="radio"
+                      value="participant"
+                    />
+                    <span class="ml-3 text-sm font-medium text-white">Participant</span>
+                  </label>
+                  <p class="text-zinc-400 text-xs px-1">
+                    Les participants contribuent au hackathon avec leurs compétences techniques et
+                    créatives.
+                  </p>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label
+                    class="flex items-center p-3 h-12 rounded-lg bg-zinc-900/50 border border-zinc-700 cursor-pointer has-[:checked]:border-accent has-[:checked]:ring-2 has-[:checked]:ring-accent/30 has-[:checked]:bg-primary/20"
+                  >
+                    <input
+                      class="form-radio h-4 w-4 text-accent bg-zinc-800 border-zinc-600 focus:ring-accent focus:ring-offset-zinc-900/50"
+                      name="role"
+                      type="radio"
+                      value="jury"
+                    />
+                    <span class="ml-3 text-sm font-medium text-white">Membre du jury</span>
+                  </label>
+                  <p class="text-zinc-400 text-xs px-1">
+                    Les membres du jury proposent des idées de hackathon et évaluent les projets.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-5" x-show="role === 'participant'" x-transition="">
+              <label class="flex flex-col">
+                <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Compétences</p>
+                <div class="relative">
+                  <select
+                    class="form-select appearance-none flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30"
+                  >
+                    <option disabled="" selected="" value="">Sélectionnez une compétence</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="backend">Backend</option>
+                    <option value="uiux">UI/UX Design</option>
+                    <option value="data">Data Science</option>
+                    <option value="devops">DevOps</option>
+                    <option value="mobile">Mobile Development</option>
+                  </select>
+                  <span
+                    class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
+                    data-icon="keyboard_arrow_down"
+                    >keyboard_arrow_down</span
+                  >
+                </div>
+              </label>
+            </div>
+            <div class="space-y-5" x-transition="">
+              <label class="flex flex-col">
+                <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">
+                  Idée de hackathon
+                </p>
+                <textarea
+                  class="form-textarea flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 p-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30"
+                  placeholder="Décrivez votre idée en quelques mots..."
+                  rows="4"
+                ></textarea>
+              </label>
+            </div>
+          </div>
+          <div class="pt-4">
+            <button
+              class="w-full bg-secondary h-14 px-6 rounded-lg bg-gradient-to-r from-primary to-accent text-white text-base font-bold shadow-lg shadow-accent/20 transition-transform duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+              type="submit"
+            >
+              <span>Soumettre</span>
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <p class="text-center text-zinc-500 text-xs mt-8">
+        En vous inscrivant, vous acceptez notre
+        <a class="underline hover:text-accent" href="#">Politique de Confidentialité</a> et nos
+        <a class="underline hover:text-accent" href="#">Conditions d'Utilisation</a>.
+      </p>
+    </main>
+  </div>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>

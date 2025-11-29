@@ -1,0 +1,255 @@
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  body {
+    min-height: 100vh;
+  }
+  .text-gradient {
+    /* background: linear-gradient(to right, #a94385, #5a3793); */
+    background: white;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body {
+    min-height: max(884px, 100dvh);
+  }
+  .bg-hn {
+    background: linear-gradient(to right, #a94385, #5a3793);
+  }
+</style>
+<div class="flex min-h-screen w-full flex-col">
+  <main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl text-gradient">
+        Hackathon Dashboard
+      </h1>
+      <span
+        class="mt-2 text-slate-600 dark:text-slate-400 md:text-lg md:text-center md:max-w-3xl md:mx-auto"
+        >hub central pour suivre le déroulement et les statistiques des hackathons en cours.</span
+      >
+    </div>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div class="lg:col-span-8 flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 justify-center text-center"
+          >
+            <h3 class="text-lg font-semibold text-white/80">Statut du hackathon</h3>
+            <span
+              class="inline-flex items-center justify-center rounded-full bg-yellow-500/20 px-4 py-1.5 text-base font-bold text-yellow-400"
+              >En attente</span
+            >
+          </div>
+          <div
+            class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 justify-center text-center"
+          >
+            <h3 class="text-lg font-semibold text-white/80">Période</h3>
+            <div class="flex items-center justify-center gap-2">
+              <div
+                class="flex flex-col items-center justify-center rounded-md bg-white/10 px-3 py-1"
+              >
+                <span class="text-2xl font-bold text-gradient">25</span>
+                <span class="text-xs font-medium uppercase tracking-wider text-white/70">OCT</span>
+              </div>
+              <span class="text-xl font-bold text-white/80">-</span>
+              <div
+                class="flex flex-col items-center justify-center rounded-md bg-white/10 px-3 py-1"
+              >
+                <span class="text-2xl font-bold text-gradient">27</span>
+                <span class="text-xs font-medium uppercase tracking-wider text-white/70">OCT</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 justify-center text-center"
+          >
+            <h3 class="text-lg font-semibold text-white/80">Nombre d'inscrits</h3>
+            <div class="flex justify-center divide-x divide-border-dark">
+              <div class="px-4">
+                <p class="text-3xl font-bold text-primary">128</p>
+                <p class="text-sm text-white/70">Participants</p>
+              </div>
+              <div class="px-4">
+                <p class="text-3xl font-bold text-primary">8</p>
+                <p class="text-sm text-white/70">Jury</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-hn rounded-xl pr bg-gradient-to-br from-secondary to-primary p-8 text-center shadow-2xl shadow-primary/20"
+        >
+          <h2 class="mb-2 text-center text-2xl font-bold text-white">
+            Compte à rebours du hackathon
+          </h2>
+          <div class="mx-auto flex w-full max-w-2xl justify-center gap-3 py-4 sm:gap-6">
+            <div class="flex flex-1 flex-col items-center gap-2">
+              <div
+                class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
+              >
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+              </div>
+              <p class="text-sm font-normal text-white/80">Jours</p>
+            </div>
+            <div class="flex flex-1 flex-col items-center gap-2">
+              <div
+                class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
+              >
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+              </div>
+              <p class="text-sm font-normal text-white/80">Heures</p>
+            </div>
+            <div class="flex flex-1 flex-col items-center gap-2">
+              <div
+                class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
+              >
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+              </div>
+              <p class="text-sm font-normal text-white/80">Minutes</p>
+            </div>
+            <div class="flex flex-1 flex-col items-center gap-2">
+              <div
+                class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
+              >
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+              </div>
+              <p class="text-sm font-normal text-white/80">Secondes</p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 text-left"
+        >
+          <h3 class="text-lg font-semibold text-white/80">Sujet du hackathon sélectionné</h3>
+          <p class="text-2xl font-bold text-white">AI pour le bien Sociale</p>
+          <div class="mt-2 border-t border-border-dark pt-4">
+            <h4 class="text-base font-semibold text-white/90 mb-2">Description du sujet</h4>
+            <p class="text-white/80 text-sm">
+              Ce hackathon vise à exploiter la puissance de l'intelligence artificielle pour relever
+              des défis sociétaux urgents. Les participants sont encouragés à développer des
+              solutions innovantes dans des domaines tels que les soins de santé, l'éducation, la
+              durabilité environnementale et l'accessibilité. L'objectif est de créer des prototypes
+              fonctionnels qui ont le potentiel d'avoir un impact positif significatif sur la
+              société, en favorisant une technologie éthique et centrée sur l'humain.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-4 flex flex-col gap-6">
+        <div
+          class="flex flex-1 flex-col rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6"
+        >
+          <h3 class="mb-4 text-xl font-semibold text-white">Liste des membres du jury</h3>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4">
+              <img
+                alt="Profile picture of a jury member"
+                class="h-12 w-12 rounded-full"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh8NSmKLuqJE5s2kB6mQE_SCvWfvIiALiQmYt8ySkbNEz7d98Y4wqTcP3iEfbzINUH1bw16ZOoZM4wsN5PRHio_J0jEZr7OxDsF0icgxyachZf5xnU-ZBVbhbi1eBD3FoAMnUW1fIkyKBllGjNBUs3XNIPGS29ZISHbQSq4CpH8hXDPNfu9XnKhhiAU5EamvRS67zO512q-Sbzt0H6_V2_UAgaoB71P64inN0opzXTbCb0V4a5lRZOc-mRY5sZ0y-b6M8BrfuNI_8"
+              />
+              <div>
+                <p class="font-semibold text-white">Dr. Elara Vance</p>
+                <p class="text-sm text-white/70">AI Ethicist, Nebula Research</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <img
+                alt="Profile picture of a jury member"
+                class="h-12 w-12 rounded-full"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH7fGbCe83S39yGUy-_65xH1t7hxzU55HcZ6wP6FwElSNK5zwCa5bg417-FdOaojITMECSedV7jO2nKKaNqdYwO4e0mz5KRJ8vYvnlua2_yAf0V3vXSJI2_3BgLJ_th6tGBZnOPBfwVf5ljfWbdgae5143DSrXr2UfvXe014f7GiGtXWQxih7yEANfOnTmge834oWCh6N3iLKwwabjPSACwZff5WsogyRsz4CHDW3sSl-I_S1Qzh0uVRdT8PmmzuyS7gsIvBP96LM"
+              />
+              <div>
+                <p class="font-semibold text-white">Kenji Tanaka</p>
+                <p class="text-sm text-white/70">Lead UX Designer, Cygnus Creative</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <img
+                alt="Profile picture of a jury member"
+                class="h-12 w-12 rounded-full"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLNwOGTb1DOquYlKYnkFQYecu3sdvjwpembV0Vkzv3gW9AMO4KCKmMfMgrjASB1gRVednMxDDSN5vjZlkTlZggkNOPEVPZihmKQIKLcy9oKGwL5zklKz7TZ4rq3LP56zpKMG2LNIcVwFeGb8IFOCm9O5UmnuD7kETxsbySw2txxN-Lc60TYwYrJnxZoXi2g_i8A5W2ne7Sk3kwpeQugQ01fJ7LsB4OEwkNyfli5tUOpIQxNO4fR-HhCuw2BSQf-j8tE4_hxQ-DDwY"
+              />
+              <div>
+                <p class="font-semibold text-white">Anya Sharma</p>
+                <p class="text-sm text-white/70">Venture Capitalist, Orion Ventures</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-1 flex-col rounded-xl bg-white/5 border border-white/10 bg-card-dark">
+          <h3 class="p-6 pb-4 text-xl font-semibold text-white">Liste des équipes générées</h3>
+          <div class="overflow-y-auto">
+            <table class="min-w-full divide-y divide-border-dark">
+              <thead class="sticky top-0 bg-card-dark bg-opacity-80 backdrop-blur-sm">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
+                  >
+                    Nom de l'équipe
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
+                  >
+                    Membres
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-dark">
+                <tr class="bg-green-500/10 hover:bg-green-500/20">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-green-400 !text-xl"
+                      >emoji_events</span
+                    >
+                    <span>Innovatech</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    A. Martin, B. Dubois, C. Petit
+                  </td>
+                </tr>
+                <tr class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Code Wizards
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    D. Laurent, E. Moreau
+                  </td>
+                </tr>
+                <tr class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Data Dynamos
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    F. Girard, G. Lefevre, H. Roux
+                  </td>
+                </tr>
+                <tr class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Future Forge
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    I. Diallo, J. Kim
+                  </td>
+                </tr>
+                <tr class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Quantum Leap
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    K. Singh, L. Garcia
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
