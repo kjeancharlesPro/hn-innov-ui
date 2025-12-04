@@ -38,10 +38,28 @@
             class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 justify-center text-center"
           >
             <h3 class="text-lg font-semibold text-white/80">Statut du hackathon</h3>
+
+            @if(status === 'EN_ATTENTE') {
             <span
               class="inline-flex items-center justify-center rounded-full bg-yellow-500/20 px-4 py-1.5 text-base font-bold text-yellow-400"
               >En attente</span
             >
+            } @else if (status === 'EN_PREPARATION') {
+            <span
+              class="inline-flex items-center justify-center rounded-full bg-blue-500/20 px-4 py-1.5 text-base font-bold text-blue-400"
+              >En préparation</span
+            >
+            } @else if(status === 'EN_COURS') {
+            <span
+              class="inline-flex items-center justify-center rounded-full bg-green-500/20 px-4 py-1.5 text-base font-bold text-green-400"
+              >En cours</span
+            >
+            } @else if(status === 'TERMINE') {
+            <span
+              class="inline-flex items-center justify-center rounded-full bg-gray-500/20 px-4 py-1.5 text-base font-bold text-gray-400"
+              >Terminé</span
+            >
+            }
           </div>
           <div
             class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 justify-center text-center"
@@ -51,15 +69,23 @@
               <div
                 class="flex flex-col items-center justify-center rounded-md bg-white/10 px-3 py-1"
               >
-                <span class="text-2xl font-bold text-gradient">25</span>
-                <span class="text-xs font-medium uppercase tracking-wider text-white/70">OCT</span>
+                <span class="text-2xl font-bold text-gradient">
+                  {{ status !== 'EN_ATTENTE' ? startDateDay : '' }}
+                </span>
+                <span class="text-xs font-medium uppercase tracking-wider text-white/70">
+                  {{ status !== 'EN_ATTENTE' ? startDateMonth : '' }}
+                </span>
               </div>
               <span class="text-xl font-bold text-white/80">-</span>
               <div
                 class="flex flex-col items-center justify-center rounded-md bg-white/10 px-3 py-1"
               >
-                <span class="text-2xl font-bold text-gradient">27</span>
-                <span class="text-xs font-medium uppercase tracking-wider text-white/70">OCT</span>
+                <span class="text-2xl font-bold text-gradient">
+                  {{ status !== 'EN_ATTENTE' ? endDateDay : '' }}
+                </span>
+                <span class="text-xs font-medium uppercase tracking-wider text-white/70">
+                  {{ status !== 'EN_ATTENTE' ? endDateMonth : '' }}
+                </span>
               </div>
             </div>
           </div>
@@ -69,11 +95,11 @@
             <h3 class="text-lg font-semibold text-white/80">Nombre d'inscrits</h3>
             <div class="flex justify-center divide-x divide-border-dark">
               <div class="px-4">
-                <p class="text-3xl font-bold text-primary">128</p>
+                <p class="text-3xl font-bold text-primary">{{ participantsCount }}</p>
                 <p class="text-sm text-white/70">Participants</p>
               </div>
               <div class="px-4">
-                <p class="text-3xl font-bold text-primary">8</p>
+                <p class="text-3xl font-bold text-primary">{{ juryCount }}</p>
                 <p class="text-sm text-white/70">Jury</p>
               </div>
             </div>
@@ -83,14 +109,16 @@
           class="bg-hn rounded-xl pr bg-gradient-to-br from-secondary to-primary p-8 text-center shadow-2xl shadow-primary/20"
         >
           <h2 class="mb-2 text-center text-2xl font-bold text-white">
-            Compte à rebours du hackathon
+            {{ countdownTitle }}
           </h2>
           <div class="mx-auto flex w-full max-w-2xl justify-center gap-3 py-4 sm:gap-6">
             <div class="flex flex-1 flex-col items-center gap-2">
               <div
                 class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
               >
-                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">
+                  {{ status !== 'EN_ATTENTE' ? countdownDays : '-' }}
+                </p>
               </div>
               <p class="text-sm font-normal text-white/80">Jours</p>
             </div>
@@ -98,7 +126,9 @@
               <div
                 class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
               >
-                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">
+                  {{ status !== 'EN_ATTENTE' ? countdownHours : '-' }}
+                </p>
               </div>
               <p class="text-sm font-normal text-white/80">Heures</p>
             </div>
@@ -106,7 +136,9 @@
               <div
                 class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
               >
-                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">
+                  {{ status !== 'EN_ATTENTE' ? countdownMinutes : '-' }}
+                </p>
               </div>
               <p class="text-sm font-normal text-white/80">Minutes</p>
             </div>
@@ -114,7 +146,9 @@
               <div
                 class="flex h-20 w-full items-center justify-center rounded-lg bg-white/20 lg:h-28"
               >
-                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">00</p>
+                <p class="text-4xl font-bold tracking-tight text-white lg:text-6xl">
+                  {{ status !== 'EN_ATTENTE' ? countdownSeconds : '-' }}
+                </p>
               </div>
               <p class="text-sm font-normal text-white/80">Secondes</p>
             </div>
@@ -124,16 +158,21 @@
           class="flex flex-col gap-4 rounded-xl bg-white/5 border border-white/10 bg-card-dark p-6 text-left"
         >
           <h3 class="text-lg font-semibold text-white/80">Sujet du hackathon sélectionné</h3>
-          <p class="text-2xl font-bold text-white">AI pour le bien Sociale</p>
+          <p class="text-2xl font-bold text-white">
+            {{
+              (status === 'EN_COURS' || status === 'TERMINE') && hackathonSubject
+                ? hackathonSubject
+                : '...'
+            }}
+          </p>
           <div class="mt-2 border-t border-border-dark pt-4">
             <h4 class="text-base font-semibold text-white/90 mb-2">Description du sujet</h4>
             <p class="text-white/80 text-sm">
-              Ce hackathon vise à exploiter la puissance de l'intelligence artificielle pour relever
-              des défis sociétaux urgents. Les participants sont encouragés à développer des
-              solutions innovantes dans des domaines tels que les soins de santé, l'éducation, la
-              durabilité environnementale et l'accessibilité. L'objectif est de créer des prototypes
-              fonctionnels qui ont le potentiel d'avoir un impact positif significatif sur la
-              société, en favorisant une technologie éthique et centrée sur l'humain.
+              {{
+                (status === 'EN_COURS' || status === 'TERMINE') && hackathonDescription
+                  ? hackathonDescription
+                  : '...'
+              }}
             </p>
           </div>
         </div>
@@ -144,45 +183,57 @@
         >
           <h3 class="mb-4 text-xl font-semibold text-white">Liste des membres du jury</h3>
           <div class="space-y-4">
-            <div class="flex items-center gap-4">
-              <img
-                alt="Profile picture of a jury member"
-                class="h-12 w-12 rounded-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh8NSmKLuqJE5s2kB6mQE_SCvWfvIiALiQmYt8ySkbNEz7d98Y4wqTcP3iEfbzINUH1bw16ZOoZM4wsN5PRHio_J0jEZr7OxDsF0icgxyachZf5xnU-ZBVbhbi1eBD3FoAMnUW1fIkyKBllGjNBUs3XNIPGS29ZISHbQSq4CpH8hXDPNfu9XnKhhiAU5EamvRS67zO512q-Sbzt0H6_V2_UAgaoB71P64inN0opzXTbCb0V4a5lRZOc-mRY5sZ0y-b6M8BrfuNI_8"
-              />
-              <div>
-                <p class="font-semibold text-white">Dr. Elara Vance</p>
-                <p class="text-sm text-white/70">AI Ethicist, Nebula Research</p>
+            @if (!loading && juryMembers.length) {
+
+            <div>
+              @for (m of juryMembers; track $index) {
+              <div class="flex items-center gap-4 mb-4">
+                <img
+                  [src]="
+                    m.photo ||
+                    'https://img.freepik.com/photos-premium/panneau-rouge-orange-tete-rouge-cercle-rouge-tete-homme_745528-2900.jpg'
+                  "
+                  [alt]="
+                    'Profile picture of ' +
+                    (m.firstName ? m.firstName + ' ' + (m.lastName || '') : 'Member')
+                  "
+                  class="h-12 w-12 rounded-full"
+                />
+                <div>
+                  <p class="font-semibold text-white">
+                    {{ m.firstName ? m.firstName + ' ' + (m.lastName || '') : 'Nom inconnu' }}
+                  </p>
+                  <p class="text-sm text-white/70">Sujet : {{ m.subject || 'Membre du jury' }}</p>
+                </div>
               </div>
+              }
             </div>
-            <div class="flex items-center gap-4">
-              <img
-                alt="Profile picture of a jury member"
-                class="h-12 w-12 rounded-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH7fGbCe83S39yGUy-_65xH1t7hxzU55HcZ6wP6FwElSNK5zwCa5bg417-FdOaojITMECSedV7jO2nKKaNqdYwO4e0mz5KRJ8vYvnlua2_yAf0V3vXSJI2_3BgLJ_th6tGBZnOPBfwVf5ljfWbdgae5143DSrXr2UfvXe014f7GiGtXWQxih7yEANfOnTmge834oWCh6N3iLKwwabjPSACwZff5WsogyRsz4CHDW3sSl-I_S1Qzh0uVRdT8PmmzuyS7gsIvBP96LM"
-              />
-              <div>
-                <p class="font-semibold text-white">Kenji Tanaka</p>
-                <p class="text-sm text-white/70">Lead UX Designer, Cygnus Creative</p>
-              </div>
+            } @else{
+            <div>
+              @if (loading) {
+              <div class="text-white/70">Chargement des membres du jury…</div>
+              } @else if (!loading && (!juryMembers || juryMembers.length === 0)) {
+              <div class="text-white/70">Aucun membre du jury trouvé.</div>
+              }
             </div>
-            <div class="flex items-center gap-4">
-              <img
-                alt="Profile picture of a jury member"
-                class="h-12 w-12 rounded-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLNwOGTb1DOquYlKYnkFQYecu3sdvjwpembV0Vkzv3gW9AMO4KCKmMfMgrjASB1gRVednMxDDSN5vjZlkTlZggkNOPEVPZihmKQIKLcy9oKGwL5zklKz7TZ4rq3LP56zpKMG2LNIcVwFeGb8IFOCm9O5UmnuD7kETxsbySw2txxN-Lc60TYwYrJnxZoXi2g_i8A5W2ne7Sk3kwpeQugQ01fJ7LsB4OEwkNyfli5tUOpIQxNO4fR-HhCuw2BSQf-j8tE4_hxQ-DDwY"
-              />
-              <div>
-                <p class="font-semibold text-white">Anya Sharma</p>
-                <p class="text-sm text-white/70">Venture Capitalist, Orion Ventures</p>
-              </div>
-            </div>
+            }
           </div>
         </div>
+
         <div class="flex flex-1 flex-col rounded-xl bg-white/5 border border-white/10 bg-card-dark">
-          <h3 class="p-6 pb-4 text-xl font-semibold text-white">Liste des équipes générées</h3>
+          <h3 class="p-6 pb-4 text-xl font-semibold text-white">
+            {{
+              status === 'EN_COURS' || status === 'TERMINE'
+                ? 'Liste des équipes générées'
+                : 'Liste des participants'
+            }}
+          </h3>
           <div class="overflow-y-auto">
-            <table class="min-w-full divide-y divide-border-dark">
+            <!-- Teams table (shown when EN_COURS or TERMINE) -->
+            <table
+              *ngIf="status === 'EN_COURS' || status === 'TERMINE'"
+              class="min-w-full divide-y divide-border-dark"
+            >
               <thead class="sticky top-0 bg-card-dark bg-opacity-80 backdrop-blur-sm">
                 <tr>
                   <th
@@ -200,49 +251,59 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-border-dark">
-                <tr class="bg-green-500/10 hover:bg-green-500/20">
-                  <td
-                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white flex items-center gap-2"
+                <tr *ngIf="loading">
+                  <td colspan="2" class="px-6 py-4 text-sm text-white/70">
+                    Chargement des équipes…
+                  </td>
+                </tr>
+                <tr *ngIf="!loading && (!teams || teams.length === 0)">
+                  <td colspan="2" class="px-6 py-4 text-sm text-white/70">
+                    Aucune équipe trouvée.
+                  </td>
+                </tr>
+                <tr *ngFor="let team of teams" class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    {{ team.name || team.teamName || 'Équipe sans nom' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    {{ getTeamMembersDisplay(team.members) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Participants table (shown when EN_ATTENTE) -->
+            <table
+              *ngIf="status !== 'EN_COURS' && status !== 'TERMINE'"
+              class="min-w-full divide-y divide-border-dark"
+            >
+              <thead class="sticky top-0 bg-card-dark bg-opacity-80 backdrop-blur-sm">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
                   >
-                    <span class="material-symbols-outlined text-green-400 !text-xl"
-                      >emoji_events</span
-                    >
-                    <span>Innovatech</span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                    A. Martin, B. Dubois, C. Petit
-                  </td>
+                    Participant
+                  </th>
                 </tr>
-                <tr class="hover:bg-white/5">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    Code Wizards
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                    D. Laurent, E. Moreau
-                  </td>
+              </thead>
+              <tbody class="divide-y divide-border-dark">
+                <tr *ngIf="loading">
+                  <td class="px-6 py-4 text-sm text-white/70">Chargement des participants…</td>
                 </tr>
-                <tr class="hover:bg-white/5">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    Data Dynamos
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                    F. Girard, G. Lefevre, H. Roux
-                  </td>
+                <tr *ngIf="!loading && (!participants || participants.length === 0)">
+                  <td class="px-6 py-4 text-sm text-white/70">Aucun participant trouvé.</td>
                 </tr>
-                <tr class="hover:bg-white/5">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    Future Forge
-                  </td>
+                <tr *ngFor="let participant of participants" class="hover:bg-white/5">
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                    I. Diallo, J. Kim
-                  </td>
-                </tr>
-                <tr class="hover:bg-white/5">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    Quantum Leap
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                    K. Singh, L. Garcia
+                    {{
+                      participant.firstName +
+                        ' ' +
+                        participant.lastName +
+                        ' (' +
+                        (participant.skill || participant.competence || 'N/A') +
+                        ')'
+                    }}
                   </td>
                 </tr>
               </tbody>

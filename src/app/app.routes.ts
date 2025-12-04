@@ -3,6 +3,7 @@ import { RegisterPage } from './register-page/register-page';
 import { DashboardPage } from './dashboard-page/dashboard-page';
 import { HomePage } from './home-page/home-page';
 import { Explore } from './explore/explore';
+import { ExploreDetail } from './explore/explore-detail/explore-detail';
 
 export const routes: Routes = [
   { path: '', component: HomePage },
@@ -15,4 +16,9 @@ export const routes: Routes = [
     path: 'explorer',
     component: Explore,
   },
+  {
+    path: 'detail',
+    component: ExploreDetail,
+  },
+  { path: '**', redirectTo: '' },
 ];

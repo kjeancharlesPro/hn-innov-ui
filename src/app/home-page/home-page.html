@@ -9,22 +9,26 @@
         et du code. Construisons l'avenir ensemble.
       </p>
       <div class="flex justify-center gap-4">
-        <button
-          class="h-12 px-6 rounded-full bg-white text-background-dark font-bold transition-transform duration-200 active:scale-95 hover:bg-white/90"
-        >
-          Participer à un Hackathon
-        </button>
-        <button
-          class="h-12 px-6 rounded-full bg-white/10 text-white font-bold border border-white/20 transition-colors hover:bg-white/20"
-        >
-          Suivre le Hackathon
-        </button>
+        <a routerLink="inscription">
+          <button
+            class="h-12 px-6 rounded-full bg-white text-background-dark font-bold transition-transform duration-200 active:scale-95 hover:bg-white/90"
+          >
+            Participer à un Hackathon
+          </button>
+        </a>
+        <a routerLink="dashboard">
+          <button
+            class="h-12 px-6 rounded-full bg-white/10 text-white font-bold border border-white/20 transition-colors hover:bg-white/20"
+          >
+            Suivre le Hackathon
+          </button>
+        </a>
       </div>
     </section>
     <section class="mb-12">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold">Explorer les Hackathons</h3>
-        <a class="text-primary hover:underline" href="#">Afficher tout</a>
+        <a class="text-primary hover:underline" routerLink="explorer">Afficher tout</a>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
