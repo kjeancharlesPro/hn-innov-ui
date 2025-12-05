@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../env/env.prd';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -110,19 +111,19 @@ export class DashboardPage implements OnInit, OnDestroy {
           console.log('🎉 Le hackathon commence maintenant !');
 
           // Update status to EN_COURS
-          this.http.put('http://localhost:8080/status/1', { state: 'EN_COURS' }).subscribe({
+          this.http.put(`${environment.apiUrl}/status/1`, { state: 'EN_COURS' }).subscribe({
             next: (statusResponse: any) => {
               console.log('✅ Statut mis à jour vers EN_COURS:', statusResponse);
               this.status = statusResponse.state;
               this.countdownTitle = 'Le hackathon a commencé';
 
               // Generate teams
-              this.http.get('http://localhost:8080/teams/generate').subscribe({
+              this.http.get(`${environment.apiUrl}/teams/generate`).subscribe({
                 next: (generateResponse) => {
                   console.log('✅ Équipes générées avec succès:', generateResponse);
 
                   // Get all teams
-                  this.http.get<any>('http://localhost:8080/teams').subscribe({
+                  this.http.get<any>(`${environment.apiUrl}/teams`).subscribe({
                     next: (teamsResponse) => {
                       console.log('📋 Liste des équipes:', teamsResponse);
 
@@ -191,7 +192,7 @@ export class DashboardPage implements OnInit, OnDestroy {
           console.log('🏁 Le hackathon est terminé !');
 
           // Update status to TERMINE
-          this.http.put('http://localhost:8080/status/1', { state: 'TERMINE' }).subscribe({
+          this.http.put(`${environment.apiUrl}/status/1`, { state: 'TERMINE' }).subscribe({
             next: (statusResponse: any) => {
               console.log('✅ Statut mis à jour vers TERMINE:', statusResponse);
               this.status = statusResponse.state;
@@ -232,7 +233,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.error = null;
 
     const participantsCount$ = this.http
-      .get<number>('http://localhost:8080/participants/count')
+      .get<number>(`${environment.apiUrl}/participants/count`)
       .pipe(
         catchError((err) => {
           console.error('participants/count error', err);
@@ -240,28 +241,28 @@ export class DashboardPage implements OnInit, OnDestroy {
         })
       );
 
-    const juryCount$ = this.http.get<number>('http://localhost:8080/jury-members/count').pipe(
+    const juryCount$ = this.http.get<number>(`${environment.apiUrl}/jury-members/count`).pipe(
       catchError((err) => {
         console.error('jury-members/count error', err);
         return of(null);
       })
     );
 
-    const juryList$ = this.http.get<any>('http://localhost:8080/jury-members').pipe(
+    const juryList$ = this.http.get<any>(`${environment.apiUrl}/jury-members`).pipe(
       catchError((err) => {
         console.error('jury-members list error', err);
         return of(null);
       })
     );
 
-    const participantsList$ = this.http.get<any>('http://localhost:8080/participants').pipe(
+    const participantsList$ = this.http.get<any>(`${environment.apiUrl}/participants`).pipe(
       catchError((err) => {
         console.error('participants list error', err);
         return of(null);
       })
     );
 
-    const status$ = this.http.get<any>('http://localhost:8080/status/1').pipe(
+    const status$ = this.http.get<any>(`${environment.apiUrl}/status/1`).pipe(
       catchError((err) => {
         console.error('status error', err);
         return of(null);
@@ -270,7 +271,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     const previousPeriod$ = this.http
       .get<any>(
-        'http://localhost:8080/periods/search/findFirstByEndDateLessThanEqualOrderByEndDateDesc?targetDate=' +
+        `${environment.apiUrl}/periods/search/findFirstByEndDateLessThanEqualOrderByEndDateDesc?targetDate=` +
           new Date().toISOString().replace('Z', '')
       )
       .pipe(
@@ -282,7 +283,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     // Get the most recent period (including future ones)
     const currentPeriod$ = this.http
-      .get<any>('http://localhost:8080/periods?sort=startDate,desc&size=1')
+      .get<any>(`${environment.apiUrl}/periods?sort=startDate,desc&size=1`)
       .pipe(
         catchError((err) => {
           console.error('currentPeriod error', err);
@@ -290,7 +291,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         })
       );
 
-    const teamsList$ = this.http.get<any>('http://localhost:8080/teams').pipe(
+    const teamsList$ = this.http.get<any>(`${environment.apiUrl}/teams`).pipe(
       catchError((err) => {
         console.error('teams list error', err);
         return of(null);
@@ -401,7 +402,7 @@ export class DashboardPage implements OnInit, OnDestroy {
             );
 
             // Update status to EN_PREPARATION
-            this.http.put('http://localhost:8080/status/1', { state: 'EN_PREPARATION' }).subscribe({
+            this.http.put(`${environment.apiUrl}/status/1`, { state: 'EN_PREPARATION' }).subscribe({
               next: (response: any) => {
                 console.log('✅ Statut mis à jour avec succès:', response);
                 this.status = response.state;
@@ -436,7 +437,7 @@ export class DashboardPage implements OnInit, OnDestroy {
                   endDate: nextFriday.toISOString(),
                 };
 
-                this.http.post('http://localhost:8080/periods', newPeriod).subscribe({
+                this.http.post(`${environment.apiUrl}/periods`, newPeriod).subscribe({
                   next: (periodResponse: any) => {
                     console.log('✅ Nouvelle période créée avec succès:', periodResponse);
 
