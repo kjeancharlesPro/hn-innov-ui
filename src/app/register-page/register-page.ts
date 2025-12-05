@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../env/env.prd';
 
 @Component({
   selector: 'app-register-page',
@@ -54,7 +55,7 @@ export class RegisterPage {
 
     const role = this.form.get('role')!.value;
     const url =
-      role === 'jury' ? 'http://localhost:8080/jury-members' : 'http://localhost:8080/participants';
+      role === 'jury' ? `${environment.apiUrl}/jury-members` : `${environment.apiUrl}/participants`;
 
     // Build payload depending on role to avoid sending irrelevant fields
     const participantPayload = {
