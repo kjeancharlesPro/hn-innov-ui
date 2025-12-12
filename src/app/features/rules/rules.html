@@ -1,0 +1,33 @@
+<main class="flex-grow p-6">
+  <div class="mx-auto max-w-7xl">
+    <section class="mb-12">
+      <div class="mb-8 text-center">
+        <h2 class="text-4xl font-bold mb-4 tracking-tight">Règlement du Hackathon</h2>
+        <p class="text-lg text-white/80 max-w-2xl mx-auto">
+          Voici les règles à respecter pour participer au hackathon et garantir une expérience
+          équitable pour tous.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @for (rule of rules; track $index) {
+        <div
+          class="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all duration-300"
+        >
+          <div class="flex items-start gap-4">
+            <div
+              class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-2xl text-primary">{{ rule.icon }}</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold mb-2">{{ rule.title }}</h3>
+              <p class="text-white/70">{{ rule.description }}</p>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+  </div>
+</main>
