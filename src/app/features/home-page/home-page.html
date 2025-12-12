@@ -1,0 +1,271 @@
+<main class="flex-grow p-6">
+  <div class="mx-auto max-w-7xl">
+    <section
+      class="bg-hn mb-12 rounded-xl pr bg-gradient-to-br from-secondary to-primary p-8 text-center shadow-2xl shadow-primary/20"
+    >
+      <h2 class="text-4xl font-bold mb-4 tracking-tight">Bon retour, Innovateur !</h2>
+      <p class="text-lg text-white/80 mb-6 max-w-2xl mx-auto">
+        Votre prochain défi vous attend. Plongez dans le monde de la création, de la collaboration
+        et du code. Construisons l'avenir ensemble.
+      </p>
+      <div class="flex justify-center gap-4">
+        <a routerLink="inscription">
+          <button
+            class="h-12 px-6 rounded-full bg-white text-background-dark font-bold transition-transform duration-200 active:scale-95 hover:bg-white/90"
+          >
+            S'inscrire au Hackathon
+          </button>
+        </a>
+        <a routerLink="dashboard">
+          <button
+            class="h-12 px-6 rounded-full bg-white/10 text-white font-bold border border-white/20 transition-colors hover:bg-white/20"
+          >
+            Suivre le Hackathon
+          </button>
+        </a>
+      </div>
+    </section>
+    <section class="mb-12">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold">Fonctions</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a
+          routerLink="/dashboard"
+          fragment="participants"
+          class="flex flex-col rounded-xl bg-white/5 border border-white/10 overflow-hidden group hover:border-primary/50 transition-all duration-300 cursor-pointer"
+        >
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="text-xl font-bold">Participants & Équipes</h4>
+              <span class="material-symbols-outlined text-4xl text-primary">groups</span>
+            </div>
+            <p class="text-white/70 text-sm mb-4 line-clamp-2">
+              Découvrez tous les participants inscrits au hackathon et consultez la composition des
+              équipes.
+            </p>
+            <div class="flex items-center gap-2 text-sm text-white/60 mb-6">
+              <span class="material-symbols-outlined text-base">person</span>
+              <span>Voir la liste complète</span>
+            </div>
+          </div>
+          <div class="mt-auto p-6 pt-0">
+            <button
+              class="w-full h-12 rounded-lg bg-primary text-white font-bold transition-all duration-200 active:scale-95 group-hover:shadow-lg group-hover:shadow-primary/50"
+            >
+              Consulter
+            </button>
+          </div>
+        </a>
+        <div
+          (click)="openIdeasModal()"
+          class="flex flex-col rounded-xl bg-white/5 border border-white/10 overflow-hidden group hover:border-secondary/50 transition-all duration-300 cursor-pointer"
+        >
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="text-xl font-bold">Idées Proposées</h4>
+              <span class="material-symbols-outlined text-4xl text-secondary">lightbulb</span>
+            </div>
+            <p class="text-white/70 text-sm mb-4 line-clamp-2">
+              Explorez toutes les idées innovantes proposées par la communauté pour le hackathon.
+            </p>
+            <div class="flex items-center gap-2 text-sm text-white/60 mb-6">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span>Consulter les propositions</span>
+            </div>
+          </div>
+          <div class="mt-auto p-6 pt-0">
+            <button
+              class="w-full h-12 rounded-lg bg-secondary text-white font-bold transition-all duration-200 active:scale-95 group-hover:shadow-lg group-hover:shadow-secondary/50"
+            >
+              Voir les idées
+            </button>
+          </div>
+        </div>
+        <div
+          (click)="openFaqModal()"
+          class="flex flex-col rounded-xl bg-white/5 border border-white/10 overflow-hidden group hover:border-green-500/50 transition-all duration-300 cursor-pointer"
+        >
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="text-xl font-bold">Questions Fréquentes (FAQ)</h4>
+              <span class="material-symbols-outlined text-4xl text-green-500">help</span>
+            </div>
+            <p class="text-white/70 text-sm mb-4 line-clamp-2">
+              Trouvez rapidement des réponses aux questions les plus fréquentes sur le hackathon.
+            </p>
+            <div class="flex items-center gap-2 text-sm text-white/60 mb-6">
+              <span class="material-symbols-outlined text-base">quiz</span>
+              <span>Consulter les réponses</span>
+            </div>
+          </div>
+          <div class="mt-auto p-6 pt-0">
+            <button
+              class="w-full h-12 rounded-lg bg-green-500 text-white font-bold transition-all duration-200 active:scale-95 group-hover:bg-green-600 group-hover:shadow-lg group-hover:shadow-green-500/50"
+            >
+              Consulter la FAQ
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Modal pour afficher les idées -->
+@if (isModalOpen) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+  (click)="closeModal()"
+>
+  <div
+    class="bg-background-dark border border-white/20 rounded-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header du modal -->
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-3xl text-secondary">lightbulb</span>
+        <h2 class="text-2xl font-bold">Idées Proposées</h2>
+      </div>
+      <button (click)="closeModal()" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+    </div>
+
+    <!-- Contenu du modal -->
+    <div class="modal-scroll p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
+      <!-- Loading state -->
+      @if (isLoading) {
+      <div class="flex items-center justify-center py-12">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
+        ></div>
+      </div>
+      } @else if (!isLoading && subjects.length > 0) {
+      <div class="space-y-4">
+        @for (subject of subjects; track subject.id; let i = $index) {
+        <div
+          class="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-secondary/50 transition-all duration-300"
+        >
+          <div class="flex items-start gap-4">
+            <div
+              class="flex-shrink-0 w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold"
+            >
+              {{ i + 1 }}
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-bold mb-2">{{ subject.title }}</h3>
+              <div class="space-y-2 text-sm text-white/70">
+                <p>
+                  <span class="text-white font-medium"> Description du projet :</span>
+                  {{ subject.description }}
+                </p>
+                <p>
+                  <span class="text-white font-medium">Objectif du hackathon :</span>
+                  {{ subject.problem }}
+                </p>
+                <p>
+                  <span class="text-white font-medium">Objectif du hackathon :</span>
+                  {{ subject.problem }}
+                </p>
+                <p>
+                  <span class="text-white font-medium">Innovation proposée :</span>
+                  {{ subject.innovation }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      } @else if (!isLoading && subjects.length === 0) {
+      <div class="text-center py-12">
+        <span class="material-symbols-outlined text-6xl text-white/30 mb-4">lightbulb_outline</span>
+        <p class="text-white text-xl font-semibold mb-2">Aucune idée proposée</p>
+        <p class="text-white/60">Il n'y a pas encore d'idées proposées pour le hackathon.</p>
+        <p class="text-white/60 mt-2">Soyez le premier à partager votre idée innovante !</p>
+      </div>
+      }
+
+      <!-- Footer du modal -->
+      <div class="p-6 border-t border-white/10 flex justify-end gap-3">
+        <button
+          (click)="closeModal()"
+          class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors font-medium"
+        >
+          Fermer
+        </button>
+        <a
+          routerLink="/boite-a-idees"
+          class="px-6 py-3 rounded-lg bg-secondary hover:bg-pink-600 transition-colors font-medium"
+        >
+          Proposer une idée
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal FAQ -->
+@if (isFaqModalOpen) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+  (click)="closeFaqModal()"
+>
+  <div
+    class="bg-background-dark border border-white/20 rounded-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header du modal -->
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-3xl text-green-500">help</span>
+        <h2 class="text-2xl font-bold">Questions Fréquentes (FAQ)</h2>
+      </div>
+      <button (click)="closeFaqModal()" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+    </div>
+
+    <!-- Contenu du modal -->
+    <div class="modal-scroll p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
+      <div class="space-y-4">
+        @for (faq of faqs; track $index) {
+        <div class="border border-white/10 rounded-xl overflow-hidden">
+          <button
+            (click)="toggleFaq($index)"
+            class="w-full p-4 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors text-left"
+          >
+            <span class="font-semibold text-lg">{{ faq.question }}</span>
+            <span
+              class="material-symbols-outlined text-2xl transition-transform"
+              [class.rotate-180]="faq.isOpen"
+            >
+              expand_more
+            </span>
+          </button>
+          @if (faq.isOpen) {
+          <div class="p-4 bg-white/[0.02] text-white/80">
+            {{ faq.answer }}
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Footer du modal -->
+    <div class="p-6 border-t border-white/10 flex justify-end">
+      <button
+        (click)="closeFaqModal()"
+        class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors font-medium"
+      >
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>
+}

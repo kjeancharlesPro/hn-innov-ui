@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { RegisterPage } from './register-page/register-page';
-import { DashboardPage } from './dashboard-page/dashboard-page';
-import { HomePage } from './home-page/home-page';
-import { Explore } from './explore/explore';
-import { ExploreDetail } from './explore/explore-detail/explore-detail';
+import { RegisterPage } from './features/register-page/register-page';
+import { DashboardPage } from './features/dashboard-page/dashboard-page';
+import { HomePage } from './features/home-page/home-page';
+import { SubjectPage } from './features/subject-page/subject-page';
 
 export const routes: Routes = [
   { path: '', component: HomePage },
@@ -11,14 +10,11 @@ export const routes: Routes = [
     path: 'inscription',
     component: RegisterPage,
   },
+  {
+    path: 'reglement',
+    loadComponent: () => import('./features/rules/rules').then((m) => m.Rules),
+  },
   { path: 'dashboard', component: DashboardPage },
-  {
-    path: 'explorer',
-    component: Explore,
-  },
-  {
-    path: 'detail',
-    component: ExploreDetail,
-  },
+  { path: 'boite-a-idees', component: SubjectPage },
   { path: '**', redirectTo: '' },
 ];
