@@ -19,40 +19,204 @@ export class HomePage {
 
   isFaqModalOpen = false;
   faqs = [
+    // Général
+    { type: 'section', title: 'Général' },
     {
-      question: 'Lorem ipsum dolor sit amet?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+      type: 'faq',
+      question: "Qu'est-ce qu'un hackathon ?",
+      answer: "Évènement au cours duquel des développeurs se réunissent durant plusieurs jours autour d'un projet collaboratif de programmation informatique ou de création numérique.",
       isOpen: false,
     },
     {
-      question: 'Consectetur adipiscing elit sed?',
-      answer:
-        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      type: 'faq',
+      question: "Quand et où se déroulera le hackathon ?",
+      answer: "Il commence le mercredi à 14h30 et se termine le vendredi à la même heure.",
       isOpen: false,
     },
     {
-      question: 'Eiusmod tempor incididunt labore?',
-      answer:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      type: 'faq',
+      question: "Quel est le thème ou le défi principal du hackathon ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       isOpen: false,
     },
     {
-      question: 'Quis nostrud exercitation ullamco?',
-      answer:
-        'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      type: 'faq',
+      question: "Y a-t-il des frais d'inscription ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       isOpen: false,
     },
     {
-      question: 'Magna aliqua enim minim veniam?',
-      answer:
-        'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
+      type: 'faq',
+      question: "Puis-je participer seul ou dois-je faire partie d'une équipe ?",
+      answer: "Les équipes peuvent être à effectifs variables allant de 2 à 4 personnes.",
       isOpen: false,
     },
     {
-      question: 'Ut labore et dolore magna aliqua?',
-      answer:
-        'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.',
+      type: 'faq',
+      question: "Quelle est la taille maximale d'une équipe ?",
+      answer: "Les équipes peuvent être composées de 2 à 4 participants.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Dois-je avoir des compétences techniques pour participer ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+
+    // Inscription et Participation
+    { type: 'section', title: 'Inscription et Participation' },
+    {
+      type: 'faq',
+      question: "Comment puis-je m'inscrire au hackathon ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "La date limite d'inscription est-elle flexible ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Puis-je m'inscrire sur place le jour du hackathon ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Que dois-je apporter pour participer ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il des restrictions d'âge pour participer ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+
+    // Logistique
+    { type: 'section', title: 'Logistique' },
+    {
+      type: 'faq',
+      question: "Le hackathon est-il en présentiel, en ligne, ou les deux ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Quelles sont les heures d'ouverture et de fermeture du hackathon ?",
+      answer: "Il commence le mercredi à 14h30 et se termine le vendredi à la même heure.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il des repas ou des collations fournis ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Puis-je dormir sur place pendant le hackathon ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il du matériel fourni (ordinateurs, accès internet, etc.) ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+
+    // Développement et Projet
+    { type: 'section', title: 'Développement et Projet' },
+    {
+      type: 'faq',
+      question: "Quels sont les critères d'évaluation des projets ?",
+      answer: "L’objectif est de réaliser un prototype répondant à la problématique de départ dans un temps imparti.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Puis-je utiliser des bibliothèques, frameworks ou outils existants ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il des restrictions sur les technologies ou les outils à utiliser ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Dois-je présenter un projet fonctionnel ou un prototype ?",
+      answer: "L’objectif est de réaliser un prototype répondant à la problématique de départ.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Combien de temps aurai-je pour présenter mon projet ?",
+      answer: "La solution de chaque équipe sera présentée à un jury après la fin du compte à rebours.",
+      isOpen: false,
+    },
+
+    // Prix et Reconnaissance
+    { type: 'section', title: 'Prix et Reconnaissance' },
+    {
+      type: 'faq',
+      question: "Quels sont les prix à gagner ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Comment les gagnants seront-ils sélectionnés ?",
+      answer: "Le jury devra être présent le vendredi de fin du hackathon pour délibérer.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il des prix spécifiques pour certaines catégories (ex. : meilleur design, meilleure innovation) ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Les projets gagnants seront-ils publiés ou partagés publiquement ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+
+    // Sécurité et Confidentialité
+    { type: 'section', title: 'Sécurité et Confidentialité' },
+    {
+      type: 'faq',
+      question: "Comment mes données personnelles seront-elles utilisées ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y a-t-il des règles de confidentialité ou de propriété intellectuelle que je dois respecter ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+
+    // Contact et Support
+    { type: 'section', title: 'Contact et Support' },
+    {
+      type: 'faq',
+      question: "Qui puis-je contacter en cas de questions ou de problèmes pendant le hackathon ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      isOpen: false,
+    },
+    {
+      type: 'faq',
+      question: "Y aura-t-il des mentors ou des experts disponibles pour nous aider ?",
+      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       isOpen: false,
     },
   ];
