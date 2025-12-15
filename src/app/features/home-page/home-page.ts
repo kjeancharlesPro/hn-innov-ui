@@ -36,13 +36,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Quel est le thème ou le défi principal du hackathon ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Y a-t-il des frais d'inscription ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Le thème est d'aider l’entreprise à relever ses défis actuels par l’innovation technologique et collaborative.",
       isOpen: false,
     },
     {
@@ -60,7 +54,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Dois-je avoir des compétences techniques pour participer ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Non, il n’est pas nécessaire d’avoir des compétences techniques. Vous pouvez contribuer en tant que Chef de projet, Communicant ou Designer, et ainsi assister l’équipe.",
       isOpen: false,
     },
 
@@ -69,31 +63,25 @@ export class HomePage {
     {
       type: 'faq',
       question: "Comment puis-je m'inscrire au hackathon ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "via la site en suivant en remplissant le formulaire d’inscription HackathoN.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "La date limite d'inscription est-elle flexible ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Oui, la date de limite d’inscription est annoncé si les prérequis sont remplis (1 membre du jury, 4 participants). Si les prérequis sont remplis alors la date de fin d’inscription sera le mercredi de la semaine suivante à 14h30.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Puis-je m'inscrire sur place le jour du hackathon ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Non, les inscriptions se font en ligne.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Que dois-je apporter pour participer ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Y a-t-il des restrictions d'âge pour participer ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Un ordinateur ou de quoi prendre des notes.",
       isOpen: false,
     },
 
@@ -102,7 +90,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Le hackathon est-il en présentiel, en ligne, ou les deux ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "En présentiel uniquement.",
       isOpen: false,
     },
     {
@@ -113,20 +101,14 @@ export class HomePage {
     },
     {
       type: 'faq',
-      question: "Y a-t-il des repas ou des collations fournis ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
       question: "Puis-je dormir sur place pendant le hackathon ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Non.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Y a-t-il du matériel fourni (ordinateurs, accès internet, etc.) ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Non, mais possibilité d’utiliser une vm (voir guide installation vm) ou demander des droits pour installer des outils",
       isOpen: false,
     },
 
@@ -141,25 +123,25 @@ export class HomePage {
     {
       type: 'faq',
       question: "Puis-je utiliser des bibliothèques, frameworks ou outils existants ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Oui.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Y a-t-il des restrictions sur les technologies ou les outils à utiliser ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Non.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Dois-je présenter un projet fonctionnel ou un prototype ?",
-      answer: "L’objectif est de réaliser un prototype répondant à la problématique de départ.",
+      answer: "Au choix.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Combien de temps aurai-je pour présenter mon projet ?",
-      answer: "La solution de chaque équipe sera présentée à un jury après la fin du compte à rebours.",
+      answer: "15 minutes.",
       isOpen: false,
     },
 
@@ -168,25 +150,13 @@ export class HomePage {
     {
       type: 'faq',
       question: "Quels sont les prix à gagner ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Goodies, Trophée.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Comment les gagnants seront-ils sélectionnés ?",
-      answer: "Le jury devra être présent le vendredi de fin du hackathon pour délibérer.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Y a-t-il des prix spécifiques pour certaines catégories (ex. : meilleur design, meilleure innovation) ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Les projets gagnants seront-ils publiés ou partagés publiquement ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Vote du jury.",
       isOpen: false,
     },
 
@@ -195,13 +165,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Comment mes données personnelles seront-elles utilisées ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Y a-t-il des règles de confidentialité ou de propriété intellectuelle que je dois respecter ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Vos données personnelles seront utilisées uniquement pour l’envoi d’e-mails d’information et l’affichage des membres de l’équipe, puis supprimées à la fin du hackathon.",
       isOpen: false,
     },
 
@@ -210,13 +174,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Qui puis-je contacter en cas de questions ou de problèmes pendant le hackathon ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      isOpen: false,
-    },
-    {
-      type: 'faq',
-      question: "Y aura-t-il des mentors ou des experts disponibles pour nous aider ?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      answer: "Pour toute question ou problème pendant le hackathon, vous pouvez nous contacter par e-mail.",
       isOpen: false,
     },
   ];
