@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import {
   calculateNextPeriodDates,
   calculateTimeComponents,
-  formatTeamMembers,
   extractEntitiesList,
   extractTeamsList,
   DASHBOARD_CONSTANTS,
@@ -23,17 +22,33 @@ import {
 } from '../../services';
 import { Countdown } from '../../interfaces/countdown.interface';
 import { FormatedPeriod, Period } from '../../interfaces';
+import {
+  StatusCardComponent,
+  PeriodCardComponent,
+  StatsCardComponent,
+  CountdownComponent,
+  ProjectInfoComponent,
+} from './components';
 
 /** Dashboard principal du hackathon avec gestion des statuts et compte à rebours */
 @Component({
   selector: 'app-dashboard-page',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    StatusCardComponent,
+    PeriodCardComponent,
+    StatsCardComponent,
+    CountdownComponent,
+    ProjectInfoComponent,
+  ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
 export class DashboardPage implements OnInit, OnDestroy {
   // État UI
   loading = false;
+  loadingStatus = false;
+  loadingPeriod = false;
   error: string | null = null;
   status: string | null = '';
 
@@ -51,8 +66,44 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   period: Period = { id: 1, startDate: '', endDate: '' };
 
+  get periodEndDateFormatted(): string {
+    if (!this.period?.endDate) return '';
+    const endDate = new Date(this.period.endDate);
+    return endDate.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  get isStatusActive(): boolean {
+    return this.status !== 'EN_ATTENTE';
+  }
+
+  get isProjectVisible(): boolean {
+    return this.status === 'EN_COURS' || this.status === 'TERMINE';
+  }
+
+  get daysSinceLastHackathon(): number {
+    if (!this.period?.endDate) return 0;
+    return Math.floor(this.calculateDaysSinceDate(this.period.endDate));
+  }
+
+  get lastHackathonEndDate(): string {
+    if (!this.period?.endDate) return '';
+    const endDate = new Date(this.period.endDate);
+    return endDate.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
   // idées hackathon
   subject: Subject = { id: 0, title: '', description: '', problem: '', innovation: '' };
+  currentHackathonId: number | null = null;
 
   // Compte à rebours
   countdown: Countdown = {
@@ -66,6 +117,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   private countdownInterval: any = null;
   private cleanupInterval: any = null;
+  private statusCheckInterval: any = null;
 
   // Subscriptions
   private sub: Subscription | null = null;
@@ -90,11 +142,14 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
     this.clearCountdownInterval();
     this.clearCleanupInterval();
+    this.clearStatusCheckInterval();
   }
 
   // API - Récupération des données
   fetchAllData(): void {
     this.loading = true;
+    this.loadingStatus = true;
+    this.loadingPeriod = true;
     this.error = null;
 
     const requests = {
@@ -111,7 +166,9 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
   private getPeriod(): Observable<any> {
-    return this.periodService.getById(1).pipe(catchError(this.handleHttpError('period')));
+    return this.periodService
+      .getById(DASHBOARD_CONSTANTS.DEFAULT_PERIOD_ID)
+      .pipe(catchError(this.handleHttpError('period')));
   }
 
   private getJuryList(): Observable<any> {
@@ -145,12 +202,27 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.juryMembers = extractEntitiesList(results.juryMembersList, 'juryMemberEntities');
     this.participants = extractEntitiesList(results.participantsList, 'participantEntities');
     this.teams = extractTeamsList(results.teamsList);
+
+    // Logs de débogage
+    console.log("📊 Données reçues de l'API:");
+    console.log('- Participants bruts:', results.participantsList);
+    console.log('- Participants extraits:', this.participants);
+    console.log('- Nombre de participants:', this.participants.length);
+
     this.participantsCount = this.participants.length;
     this.juryCount = this.juryMembers.length;
     this.status = results.status?.state;
+    console.log('🔵 Statut actuel:', this.status);
     this.formatedPeriod = this.convertToFormatedPeriod(results.period);
     this.period = results.period;
+    console.log('📅 Période:', {
+      start: this.period.startDate,
+      end: this.period.endDate,
+      now: new Date().toISOString(),
+    });
     this.loading = false;
+    this.loadingStatus = false;
+    this.loadingPeriod = false;
 
     if (this.status === 'TERMINE') {
       this.countdown.title = 'Nettoyage dans';
@@ -163,14 +235,24 @@ export class DashboardPage implements OnInit, OnDestroy {
     }
 
     if (this.status === 'EN_PREPARATION') {
-      this.startCountdown(new Date(this.period.startDate));
-      if (this.countdown.hadEnded) {
-        this.triggerEnCours();
-      }
+      console.log('📅 Période actuelle:', this.period);
+      const startDate = new Date(this.period.startDate);
+      const now = new Date();
+      console.log('⏰ Comparaison dates:', {
+        startDate: startDate.toISOString(),
+        now: now.toISOString(),
+        difference: (startDate.getTime() - now.getTime()) / 1000 / 60 + ' minutes',
+      });
+      this.startCountdown(startDate);
     }
 
     if (this.isReadyForPreparation()) {
       this.triggerPreparation();
+    }
+
+    // Démarrer la vérification périodique si en attente
+    if (this.status === 'EN_ATTENTE') {
+      this.startStatusCheckInterval();
     }
 
     this.cdr.detectChanges();
@@ -222,8 +304,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private transitionToEnCours(): void {
-    console.log('🎉 Le hackathon commence maintenant !');
-
+    console.log('🔵 Transition vers EN_COURS...');
     // D'abord générer les équipes avant de changer le statut
     this.hackathonService.generate().subscribe({
       next: (generateResponse) => {
@@ -250,35 +331,66 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private loadHackathonData(): void {
-    const hackathonId = 1;
+    // Récupérer d'abord le hackathon actuel pour avoir son ID
+    this.hackathonService.get().subscribe({
+      next: (hackathonResponse: any) => {
+        console.log('🔍 Réponse complète hackathons:', hackathonResponse);
+        const hackathons = hackathonResponse?._embedded?.hackathonEntities || [];
+        console.log('🔍 Liste des hackathons:', hackathons);
 
-    // Charger les équipes
-    this.teamService.getAll().subscribe({
-      next: (teamsResponse: any) => {
-        this.teams = extractTeamsList(teamsResponse);
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('❌ Erreur lors de la récupération des équipes:', err);
-      },
-    });
+        if (hackathons.length > 0) {
+          const currentHackathon = hackathons[0];
+          const juryMemberLink = currentHackathon?._links?.juryMember?.href || '';
+          console.log('🔍 Lien juryMember:', juryMemberLink);
 
-    // Charger le membre du jury sélectionné
-    this.hackathonService.getJuryMember(hackathonId).subscribe({
-      next: (juryMemberResponse) => {
-        if (juryMemberResponse) {
-          this.subject = {
-            id: juryMemberResponse.id || 0,
-            title: juryMemberResponse.title || '',
-            description: juryMemberResponse.description || '',
-            problem: juryMemberResponse.problem || '',
-            innovation: juryMemberResponse.innovation || '',
-          };
+          // Extraire l'ID du hackathon depuis l'URL (ex: "http://localhost:8080/hackathons/2/juryMember")
+          const hackathonIdMatch = juryMemberLink.match(/\/hackathons\/(\d+)\//);
+          this.currentHackathonId = hackathonIdMatch ? parseInt(hackathonIdMatch[1], 10) : null;
+
+          console.log('🎯 Hackathon actuel:', currentHackathon);
+          console.log('🎯 ID extrait du lien:', this.currentHackathonId);
+
+          if (!this.currentHackathonId) {
+            console.error("❌ Impossible d'extraire l'ID du hackathon depuis le lien");
+            return;
+          }
+
+          // Charger les équipes
+          this.teamService.getAll().subscribe({
+            next: (teamsResponse: any) => {
+              this.teams = extractTeamsList(teamsResponse);
+              this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+              console.error('❌ Erreur lors de la récupération des équipes:', err);
+            },
+          });
+
+          // Charger le membre du jury sélectionné avec le bon ID
+          this.hackathonService.getJuryMember(this.currentHackathonId).subscribe({
+            next: (juryMemberResponse) => {
+              if (juryMemberResponse) {
+                this.subject = {
+                  id: juryMemberResponse.id || 0,
+                  title: juryMemberResponse.title || '',
+                  description: juryMemberResponse.description || '',
+                  problem: juryMemberResponse.problem || '',
+                  innovation: juryMemberResponse.innovation || '',
+                };
+                console.log('📋 Sujet du jury:', this.subject);
+              }
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('❌ Erreur lors de la récupération du membre du jury:', err);
+            },
+          });
+        } else {
+          console.warn('⚠️ Aucun hackathon actuel trouvé');
         }
-        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('❌ Erreur lors de la récupération du membre du jury:', err);
+        console.error('❌ Erreur lors de la récupération du hackathon actuel:', err);
       },
     });
 
@@ -289,11 +401,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private transitionToTermine(): void {
-    console.log('🏁 Le hackathon est terminé !');
-
+    console.log('🔵 Transition vers TERMINE...');
     this.statusService.setTermine().subscribe({
       next: (statusResponse) => {
-        console.log('✅ Statut mis à jour vers TERMINE:', statusResponse);
         this.status = statusResponse.state;
         this.countdown.title = 'Nettoyage dans';
         this.scheduleEndOfDayCleanup();
@@ -345,6 +455,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   triggerPreparation(): void {
+    console.log('🔵 Déclenchement de la préparation...');
     this.statusService.setEnPreparation().subscribe({
       next: (response) => {
         this.status = response.state;
@@ -358,20 +469,45 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   createAndUpdatePeriod(): void {
-    const period: Period = calculateNextPeriodDates();
-    const now5MinLater = new Date(Date.now() + 80 * 60000);
-    const now10MinLater = new Date(Date.now() + 90 * 60000);
+    // Utiliser UTC+1 (ajouter 1 heure = 3600000 ms)
+    const nowTimestamp = Date.now() + 3600000;
+    const now5MinLater = new Date(
+      nowTimestamp + DASHBOARD_CONSTANTS.TEST_START_OFFSET_MINUTES * 60000
+    );
+    const now10MinLater = new Date(
+      nowTimestamp + DASHBOARD_CONSTANTS.TEST_END_OFFSET_MINUTES * 60000
+    );
+
+    console.log('📅 Création de la période de test:', {
+      start: now5MinLater.toISOString(),
+      end: now10MinLater.toISOString(),
+      now: new Date(nowTimestamp).toISOString(),
+      startOffset: DASHBOARD_CONSTANTS.TEST_START_OFFSET_MINUTES,
+      endOffset: DASHBOARD_CONSTANTS.TEST_END_OFFSET_MINUTES,
+    });
 
     const testPeriod: Period = {
-      id: 1,
+      id: DASHBOARD_CONSTANTS.DEFAULT_PERIOD_ID,
       startDate: now5MinLater.toISOString(),
       endDate: now10MinLater.toISOString(),
     };
 
-    this.periodService.update(1, testPeriod).subscribe({
+    console.log('📤 Envoi de la période au backend:', testPeriod);
+
+    this.periodService.update(DASHBOARD_CONSTANTS.DEFAULT_PERIOD_ID, testPeriod).subscribe({
       next: (periodResponse) => {
+        console.log('📥 Période reçue du backend:', {
+          id: periodResponse.id,
+          startDate: periodResponse.startDate,
+          endDate: periodResponse.endDate,
+          fullResponse: periodResponse,
+        });
         this.period = periodResponse;
         this.formatedPeriod = this.convertToFormatedPeriod(periodResponse);
+        console.log(
+          '🚀 Démarrage du countdown vers:',
+          new Date(periodResponse.startDate).toISOString()
+        );
         this.startCountdown(new Date(periodResponse.startDate));
         this.cdr.detectChanges();
       },
@@ -473,10 +609,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     midnight.setHours(24, 0, 0, 0);
 
-    console.log('🕛 Nettoyage programmé pour minuit:', midnight);
-
     // Démarrer le compte à rebours jusqu'à minuit
-    const testMidnight = new Date(Date.now() + 5 * 60000);
+    const testMidnight = new Date(
+      Date.now() + DASHBOARD_CONSTANTS.TEST_CLEANUP_OFFSET_MINUTES * 60000
+    );
     this.startCountdown(testMidnight);
 
     // Vérifier toutes les secondes si on a atteint minuit
@@ -485,20 +621,18 @@ export class DashboardPage implements OnInit, OnDestroy {
       if (currentTime >= testMidnight) {
         this.performEndOfDayCleanup();
       }
-    }, 1000);
+    }, DASHBOARD_CONSTANTS.CLEANUP_CHECK_INTERVAL_MS);
   }
 
   /**
    * Effectue le nettoyage de fin de journée - transition vers EN_ATTENTE
    */
   private performEndOfDayCleanup(): void {
-    console.log('🧹 Début du nettoyage de fin de journée...');
     this.clearCleanupInterval();
 
     // Remettre le statut à EN_ATTENTE d'abord, puis supprimer les données
     this.statusService.setEnAttente().subscribe({
       next: (response) => {
-        console.log('✅ Statut remis à EN_ATTENTE');
         this.status = response.state;
         this.countdown.title = 'Le hackathon commence bientôt';
         this.resetCountdownDisplay();
@@ -516,57 +650,61 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   /**
    * Supprime toutes les données du hackathon (hackathon, équipes, jury, participants)
+   * Respecte l'ordre des contraintes d'intégrité référentielle :
+   * 1. Hackathon (référence JuryMember)
+   * 2. Équipes (référence Participants)
+   * 3. Membres du jury
+   * 4. Participants
    */
   private deleteAllHackathonData(): void {
-    // Supprimer le hackathon
+    // Étape 1 : Supprimer le hackathon en premier (référence jury member)
     this.hackathonService.deleteAll().subscribe({
       next: () => {
-        console.log('✅ Hackathon supprimé');
+        // Étape 2 : Supprimer les équipes (référence participants)
+        this.teamService.deleteAll().subscribe({
+          next: () => {
+            this.teams = [];
+
+            // Étape 3 : Supprimer les membres du jury (plus référencés par hackathon)
+            this.juryMemberService.deleteAll().subscribe({
+              next: () => {
+                this.juryMembers = [];
+                this.juryCount = 0;
+
+                // Étape 4 : Supprimer les participants (plus référencés par équipes)
+                this.participantService.deleteAll().subscribe({
+                  next: () => {
+                    this.participants = [];
+                    this.participantsCount = 0;
+
+                    // Recharger les données pour mettre à jour les compteurs et vérifier le statut
+                    setTimeout(() => {
+                      this.fetchAllData();
+                    }, DASHBOARD_CONSTANTS.DATA_RELOAD_DELAY_MS);
+                  },
+                  error: (err: any) => {
+                    console.error('❌ Erreur lors de la suppression des participants:', err);
+                    this.cdr.detectChanges();
+                  },
+                });
+              },
+              error: (err: any) => {
+                console.error('❌ Erreur lors de la suppression des membres du jury:', err);
+                this.cdr.detectChanges();
+              },
+            });
+          },
+          error: (err: any) => {
+            console.error('❌ Erreur lors de la suppression des équipes:', err);
+            this.cdr.detectChanges();
+          },
+        });
       },
       error: (err: any) => {
         console.error('❌ Erreur lors de la suppression du hackathon:', err);
-      },
-    });
-
-    // Supprimer toutes les équipes
-    this.teamService.deleteAll().subscribe({
-      next: () => {
-        console.log('✅ Équipes supprimées');
-        this.teams = [];
         this.cdr.detectChanges();
       },
-      error: (err: any) => {
-        console.error('❌ Erreur lors de la suppression des équipes:', err);
-      },
     });
-
-    // Supprimer tous les membres du jury
-    this.juryMemberService.deleteAll().subscribe({
-      next: () => {
-        console.log('✅ Membres du jury supprimés');
-        this.juryMembers = [];
-        this.juryCount = 0;
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('❌ Erreur lors de la suppression des membres du jury:', err);
-      },
-    });
-
-    // Supprimer tous les participants
-    this.participantService.deleteAll().subscribe({
-      next: () => {
-        console.log('✅ Participants supprimés');
-        this.participants = [];
-        this.participantsCount = 0;
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('❌ Erreur lors de la suppression des participants:', err);
-      },
-    });
-
-    console.log('🎉 Nettoyage terminé, prêt pour le prochain hackathon!');
   }
 
   /**
@@ -576,6 +714,66 @@ export class DashboardPage implements OnInit, OnDestroy {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
+    }
+  }
+
+  /**
+   * Démarre la vérification périodique pour passer en préparation
+   * Vérifie toutes les 5 secondes si les conditions sont remplies
+   */
+  private startStatusCheckInterval(): void {
+    this.clearStatusCheckInterval();
+
+    this.statusCheckInterval = setInterval(() => {
+      // Recharger les données pour avoir les compteurs à jour
+      this.sub?.unsubscribe();
+
+      const requests = {
+        participantsList: this.getParticipantsList(),
+        juryMembersList: this.getJuryList(),
+        status: this.getStatus(),
+      };
+
+      this.sub = forkJoin(requests).subscribe({
+        next: (results) => {
+          const newParticipants = extractEntitiesList(
+            results.participantsList,
+            'participantEntities'
+          );
+          const newJuryMembers = extractEntitiesList(results.juryMembersList, 'juryMemberEntities');
+
+          this.participants = newParticipants;
+          this.juryMembers = newJuryMembers;
+          this.participantsCount = newParticipants.length;
+          this.juryCount = newJuryMembers.length;
+          this.status = results.status?.state;
+
+          // Si on n'est plus en attente, arrêter la vérification
+          if (this.status !== 'EN_ATTENTE') {
+            this.clearStatusCheckInterval();
+          }
+          // Si prêt pour la préparation, déclencher la transition
+          else if (this.isReadyForPreparation()) {
+            this.clearStatusCheckInterval();
+            this.triggerPreparation();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('❌ Erreur lors de la vérification du statut:', err);
+        },
+      });
+    }, DASHBOARD_CONSTANTS.STATUS_CHECK_INTERVAL_MS);
+  }
+
+  /**
+   * Arrête et nettoie l'intervalle de vérification du statut
+   */
+  private clearStatusCheckInterval(): void {
+    if (this.statusCheckInterval) {
+      clearInterval(this.statusCheckInterval);
+      this.statusCheckInterval = null;
     }
   }
 }
