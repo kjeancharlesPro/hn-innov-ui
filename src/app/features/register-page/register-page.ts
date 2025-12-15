@@ -26,6 +26,53 @@ export class RegisterPage implements OnInit {
   selectedIssueDetails: Subject | null = null;
   hackathonStatus: string | null = null;
   registrationClosed = false;
+  selectedSkillDetails: {
+    value: string;
+    option: string;
+    title: string;
+    descriptions: string[];
+  } | null = null;
+
+  skillsInfo: {
+    [key: string]: { value: string; option: string; title: string; descriptions: string[] };
+  } = {
+    Développeur: {
+      value: 'Développeur',
+      option: 'Développeur',
+      title: 'Développeur',
+      descriptions: [
+        'Maîtrise des langages comme Java, Python, JavaScript, etc.',
+        'Capacité à coder rapidement et à résoudre des problèmes techniques.',
+      ],
+    },
+    Designer: {
+      value: 'Designer',
+      option: 'Designer',
+      title: 'Designer',
+      descriptions: [
+        'Créent des interfaces intuitives et attractives.',
+        "Pensent l'expérience utilisateur pour rendre le projet crédible et utilisable.",
+      ],
+    },
+    'Chef de projet': {
+      value: 'Chef de projet',
+      option: 'Chef de projet',
+      title: 'Chef de projet',
+      descriptions: [
+        "Structurent l'idée, définissent la vision et la stratégie.",
+        'Assurent la cohérence entre innovation et faisabilité.',
+      ],
+    },
+    Communicant: {
+      value: 'Communicant',
+      option: 'Communicant',
+      title: 'Communicant',
+      descriptions: [
+        'Pitchent le projet devant le jury.',
+        'Valorisation de la solution et storytelling pour convaincre.',
+      ],
+    },
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -44,6 +91,10 @@ export class RegisterPage implements OnInit {
     this.setupFormListeners();
   }
 
+  get skillsList() {
+    return Object.values(this.skillsInfo);
+  }
+
   private createForm(): FormGroup {
     return this.fb.group(
       {
@@ -53,7 +104,7 @@ export class RegisterPage implements OnInit {
         emailConfirm: ['', [Validators.required, Validators.email]],
         role: ['participant', Validators.required],
         hasIdea: ['none'],
-        skill: [''],
+        skill: ['', Validators.required],
         selectedIssue: [''],
         title: [''],
         description: [''],
@@ -73,6 +124,14 @@ export class RegisterPage implements OnInit {
       return { emailMismatch: true };
     }
 
+    return null;
+  }
+
+  private hasIdeaValidator(control: any): { [key: string]: boolean } | null {
+    const value = control.value;
+    if (value === 'none' || !value) {
+      return { required: true };
+    }
     return null;
   }
 
@@ -109,6 +168,26 @@ export class RegisterPage implements OnInit {
   private handleRoleChange(role: string): void {
     if (role === 'jury') {
       this.form.get('skill')?.setValue('');
+      this.form.get('skill')?.clearValidators();
+      this.form.get('hasIdea')?.setValidators([this.hasIdeaValidator.bind(this)]);
+      this.selectedSkillDetails = null;
+    } else if (role === 'participant') {
+      this.form.get('skill')?.setValidators([Validators.required]);
+      this.form.get('hasIdea')?.setValue('none');
+      this.form.get('hasIdea')?.clearValidators();
+    }
+    this.form.get('skill')?.updateValueAndValidity();
+    this.form.get('hasIdea')?.updateValueAndValidity();
+  }
+
+  onSkillSelected(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const skillValue = target.value;
+
+    if (skillValue && this.skillsInfo[skillValue]) {
+      this.selectedSkillDetails = this.skillsInfo[skillValue];
+    } else {
+      this.selectedSkillDetails = null;
     }
   }
 
@@ -118,7 +197,30 @@ export class RegisterPage implements OnInit {
     }
     if (hasIdea === 'none') {
       this.clearSelectedIssue();
+      this.form.get('selectedIssue')?.clearValidators();
+      this.form.get('title')?.clearValidators();
+      this.form.get('description')?.clearValidators();
+      this.form.get('problem')?.clearValidators();
+      this.form.get('innovation')?.clearValidators();
+    } else if (hasIdea === 'adopt') {
+      this.form.get('selectedIssue')?.setValidators([Validators.required]);
+      this.form.get('title')?.clearValidators();
+      this.form.get('description')?.clearValidators();
+      this.form.get('problem')?.clearValidators();
+      this.form.get('innovation')?.clearValidators();
+    } else if (hasIdea === 'propose') {
+      this.clearSelectedIssue();
+      this.form.get('selectedIssue')?.clearValidators();
+      this.form.get('title')?.setValidators([Validators.required]);
+      this.form.get('description')?.setValidators([Validators.required]);
+      this.form.get('problem')?.setValidators([Validators.required]);
+      this.form.get('innovation')?.setValidators([Validators.required]);
     }
+    this.form.get('selectedIssue')?.updateValueAndValidity();
+    this.form.get('title')?.updateValueAndValidity();
+    this.form.get('description')?.updateValueAndValidity();
+    this.form.get('problem')?.updateValueAndValidity();
+    this.form.get('innovation')?.updateValueAndValidity();
   }
 
   private clearIdeaFields(): void {
@@ -221,7 +323,11 @@ export class RegisterPage implements OnInit {
     this.success = true;
     this.loading = false;
     this.error = null;
-    this.form.reset({ role: 'participant' });
+    this.form.reset({ role: 'participant', hasIdea: 'none' });
+    this.selectedSkillDetails = null;
+    // Réappliquer la validation pour le champ skill après le reset
+    this.form.get('skill')?.setValidators([Validators.required]);
+    this.form.get('skill')?.updateValueAndValidity();
     this.submitted = false;
     this.autoCloseAlert('success', 3000);
   }

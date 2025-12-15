@@ -198,6 +198,9 @@
               <span class="ml-3 text-sm font-medium text-white">Présenter une idée existante</span>
             </label>
           </div>
+          <p *ngIf="isFieldInvalid('hasIdea')" class="text-red-400 text-xs mt-1">
+            Veuillez sélectionner une option
+          </p>
         </div>
 
         <!-- Délimiteur -->
@@ -210,19 +213,43 @@
             <div class="relative">
               <select
                 formControlName="skill"
+                (change)="onSkillSelected($event)"
+                [class.border-red-500]="isFieldInvalid('skill')"
+                [class.ring-red-500/30]="isFieldInvalid('skill')"
                 class="form-select appearance-none flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               >
                 <option disabled selected value="">Sélectionnez une compétence</option>
-                <option value="Business Analyst">Business Analyst</option>
-                <option value="Chef de projet">Chef de projet</option>
-                <option value="Développeur">Développeur</option>
-                <option value="Data Analyst">Data Analyst</option>
-                <option value="Ingénieur production">Ingénieur production</option>
-                <option value="Ingénieur commercial">Ingénieur commercial</option>
-                <option value="Product Owner">Product Owner</option>
+                <option *ngFor="let skill of skillsList" [value]="skill.value">
+                  {{ skill.option }}
+                </option>
               </select>
             </div>
+            <p *ngIf="isFieldInvalid('skill')" class="text-red-400 text-xs mt-1">
+              La compétence est requise
+            </p>
           </label>
+
+          <!-- Card pour afficher les détails de la compétence sélectionnée -->
+          <div
+            *ngIf="selectedSkillDetails"
+            class="rounded-xl bg-white/5 border border-white/10 p-6 space-y-4"
+          >
+            <div>
+              <p class="text-zinc-400 text-xs font-medium uppercase tracking-wide mb-3">
+                {{ selectedSkillDetails.title }}
+              </p>
+              <ul class="space-y-2">
+                <li
+                  *ngFor="let description of selectedSkillDetails.descriptions"
+                  class="text-white text-sm flex items-start gap-2"
+                >
+                  •
+                  <!-- <span class="text-accent mt-1 flex-shrink-0">•</span> -->
+                  <span>{{ description }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <!-- S'approprier une idée : visible si hasIdea = 'adopt' ET role = 'jury' -->
@@ -238,6 +265,8 @@
               <select
                 formControlName="selectedIssue"
                 (change)="onIssueSelected($event)"
+                [class.border-red-500]="isFieldInvalid('selectedIssue')"
+                [class.ring-red-500/30]="isFieldInvalid('selectedIssue')"
                 class="form-select appearance-none flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 h-12 px-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               >
                 <option disabled selected value="">Choisissez une idée à vous approprier</option>
@@ -246,6 +275,9 @@
                 </option>
               </select>
             </div>
+            <p *ngIf="isFieldInvalid('selectedIssue')" class="text-red-400 text-xs mt-1">
+              Veuillez sélectionner une idée
+            </p>
           </label>
           <!-- Card pour afficher les détails de l'idée sélectionnée -->
           <div
@@ -289,10 +321,15 @@
             <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Titre du projet</p>
             <textarea
               formControlName="title"
+              [class.border-red-500]="isFieldInvalid('title')"
+              [class.ring-red-500/30]="isFieldInvalid('title')"
               class="form-textarea flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 p-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               placeholder="Un titre accrocheur et descriptif qui résume l'idée principale"
               rows="2"
             ></textarea>
+            <p *ngIf="isFieldInvalid('title')" class="text-red-400 text-xs mt-1">
+              Le titre du projet est requis
+            </p>
           </label>
 
           <label class="flex flex-col">
@@ -301,20 +338,30 @@
             </p>
             <textarea
               formControlName="description"
+              [class.border-red-500]="isFieldInvalid('description')"
+              [class.ring-red-500/30]="isFieldInvalid('description')"
               class="form-textarea flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 p-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               placeholder="Une brève description (100-200 mots) expliquant l'idée, son objectif et son utilité. Cette section doit donner une vue d'ensemble du projet"
               rows="3"
             ></textarea>
+            <p *ngIf="isFieldInvalid('description')" class="text-red-400 text-xs mt-1">
+              La description du projet est requise
+            </p>
           </label>
 
           <label class="flex flex-col">
             <p class="text-zinc-300 text-sm font-medium leading-normal pb-2">Problème à résoudre</p>
             <textarea
               formControlName="problem"
+              [class.border-red-500]="isFieldInvalid('problem')"
+              [class.ring-red-500/30]="isFieldInvalid('problem')"
               class="form-textarea flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 p-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               placeholder="Décrire le problème ou le besoin que le projet vise à résoudre. Pourquoi ce projet est-il important ou pertinent ?"
               rows="3"
             ></textarea>
+            <p *ngIf="isFieldInvalid('problem')" class="text-red-400 text-xs mt-1">
+              Le problème à résoudre est requis
+            </p>
           </label>
 
           <label class="flex flex-col">
@@ -323,10 +370,15 @@
             </p>
             <textarea
               formControlName="innovation"
+              [class.border-red-500]="isFieldInvalid('innovation')"
+              [class.ring-red-500/30]="isFieldInvalid('innovation')"
               class="form-textarea flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white placeholder:text-zinc-500 focus:outline-0 border border-zinc-700 bg-zinc-900/50 p-4 text-base font-normal leading-normal ring-2 ring-transparent focus:border-accent focus:ring-accent/30 transition-colors"
               placeholder="Qu'est-ce qui rend ce projet unique ou innovant par rapport à ce qui existe déjà ?"
               rows="2"
             ></textarea>
+            <p *ngIf="isFieldInvalid('innovation')" class="text-red-400 text-xs mt-1">
+              L'innovation et l'originalité sont requises
+            </p>
           </label>
         </div>
       </div>

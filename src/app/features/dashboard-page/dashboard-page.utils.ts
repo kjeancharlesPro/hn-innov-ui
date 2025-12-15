@@ -3,26 +3,38 @@
 import { Period } from '../../interfaces';
 import { Participant } from '../../services';
 
-/** Calcule les dates de la prochaine période (mercredi et vendredi à 15h) */
+/** Calcule les dates de la prochaine période (mercredi et vendredi à 14h30) */
 export function calculateNextPeriodDates(): Period {
   const now = new Date();
+  const currentDay = now.getDay(); // 0 = dimanche, 1 = lundi, ..., 6 = samedi
 
-  const currentDay = now.getDay();
-  let daysUntilNextWednesday = (3 - currentDay + 7) % 7;
+  let daysUntilNextWednesday: number;
 
-  if (daysUntilNextWednesday === 0 && now.getHours() >= 15) {
-    daysUntilNextWednesday = 7;
-  } else if (daysUntilNextWednesday === 0) {
-    daysUntilNextWednesday = 7;
+  // Si lundi (1) ou mardi (2) : mercredi de cette semaine
+  if (currentDay === 1 || currentDay === 2) {
+    daysUntilNextWednesday = 3 - currentDay; // lundi: 2 jours, mardi: 1 jour
+  }
+  // Si mercredi (3), jeudi (4), vendredi (5), samedi (6) ou dimanche (0) : mercredi prochain
+  else {
+    if (currentDay === 0) {
+      // Dimanche : 3 jours jusqu'au mercredi
+      daysUntilNextWednesday = 3;
+    } else {
+      // Mercredi, jeudi, vendredi, samedi : jusqu'au mercredi suivant
+      daysUntilNextWednesday = (3 - currentDay + 7) % 7;
+      if (daysUntilNextWednesday === 0) {
+        daysUntilNextWednesday = 7;
+      }
+    }
   }
 
   const nextWednesday = new Date(now);
   nextWednesday.setDate(now.getDate() + daysUntilNextWednesday);
-  nextWednesday.setHours(15, 0, 0, 0);
+  nextWednesday.setHours(14, 30, 0, 0);
 
   const nextFriday = new Date(nextWednesday);
   nextFriday.setDate(nextWednesday.getDate() + 2);
-  nextFriday.setHours(15, 0, 0, 0);
+  nextFriday.setHours(14, 30, 0, 0);
 
   return {
     startDate: nextWednesday.toISOString(),
