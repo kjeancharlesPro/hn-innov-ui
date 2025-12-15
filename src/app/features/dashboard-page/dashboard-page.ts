@@ -19,6 +19,8 @@ import {
   HackathonService,
   Subject,
   Team,
+  CountdownService,
+  StatusTransitionService,
 } from '../../services';
 import { Countdown } from '../../interfaces/countdown.interface';
 import { FormatedPeriod, Period } from '../../interfaces';
@@ -66,6 +68,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   period: Period = { id: 1, startDate: '', endDate: '' };
 
+  /**
+   * Retourne la date de fin de période formatée en français.
+   * @returns Date formatée ou chaîne vide si aucune date
+   */
   get periodEndDateFormatted(): string {
     if (!this.period?.endDate) return '';
     const endDate = new Date(this.period.endDate);
@@ -78,10 +84,18 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Indique si le hackathon est dans un statut actif (pas EN_ATTENTE).
+   * @returns true si le statut est actif
+   */
   get isStatusActive(): boolean {
     return this.status !== 'EN_ATTENTE';
   }
 
+  /**
+   * Indique si les informations du projet doivent être affichées.
+   * @returns true si le hackathon est en cours ou terminé
+   */
   get isProjectVisible(): boolean {
     return this.status === 'EN_COURS' || this.status === 'TERMINE';
   }
@@ -101,11 +115,13 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
-  // idées hackathon
+  /** Sujet du hackathon sélectionné par le jury */
   subject: Subject = { id: 0, title: '', description: '', problem: '', innovation: '' };
+
+  /** ID du hackathon actuel */
   currentHackathonId: number | null = null;
 
-  // Compte à rebours
+  /** Données du compte à rebours */
   countdown: Countdown = {
     title: 'Le hackathon commence bientôt',
     days: 0,
@@ -115,12 +131,17 @@ export class DashboardPage implements OnInit, OnDestroy {
     hadEnded: false,
   };
 
-  private countdownInterval: any = null;
+  /** Intervalle de nettoyage de fin de journée */
   private cleanupInterval: any = null;
+
+  /** Intervalle de vérification du statut */
   private statusCheckInterval: any = null;
 
-  // Subscriptions
+  /** Subscription aux observables */
   private sub: Subscription | null = null;
+
+  /** Subscription au countdown */
+  private countdownSub: Subscription | null = null;
 
   constructor(
     private participantService: ParticipantService,
@@ -130,22 +151,46 @@ export class DashboardPage implements OnInit, OnDestroy {
     private periodService: PeriodService,
     private emailService: EmailService,
     private hackathonService: HackathonService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private countdownService: CountdownService,
+    private statusTransitionService: StatusTransitionService
   ) {}
 
-  // Lifecycle
+  /**
+   * Initialise le composant au chargement.
+   * Récupère toutes les données initiales du dashboard.
+   */
   ngOnInit(): void {
     this.fetchAllData();
+    this.subscribeToCountdown();
   }
 
+  /**
+   * S'abonne aux changements du countdown.
+   */
+  private subscribeToCountdown(): void {
+    this.countdownSub = this.countdownService.countdown$.subscribe((countdown) => {
+      this.countdown = countdown;
+      this.cdr.detectChanges();
+    });
+  }
+
+  /**
+   * Nettoie les ressources avant la destruction du composant.
+   * Arrête tous les intervalles et désabonne les observables.
+   */
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
-    this.clearCountdownInterval();
+    this.countdownSub?.unsubscribe();
+    this.countdownService.stopCountdown();
     this.clearCleanupInterval();
     this.clearStatusCheckInterval();
   }
 
-  // API - Récupération des données
+  /**
+   * Récupère toutes les données nécessaires au dashboard.
+   * Utilise forkJoin pour exécuter toutes les requêtes en parallèle.
+   */
   fetchAllData(): void {
     this.loading = true;
     this.loadingStatus = true;
@@ -198,28 +243,21 @@ export class DashboardPage implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Gère le succès de la récupération des données.
+   * Traite les résultats et démarre les processus selon le statut.
+   * @param results Résultats groupés des requêtes API
+   */
   private handleDataFetchSuccess(results: any): void {
     this.juryMembers = extractEntitiesList(results.juryMembersList, 'juryMemberEntities');
     this.participants = extractEntitiesList(results.participantsList, 'participantEntities');
     this.teams = extractTeamsList(results.teamsList);
 
-    // Logs de débogage
-    console.log("📊 Données reçues de l'API:");
-    console.log('- Participants bruts:', results.participantsList);
-    console.log('- Participants extraits:', this.participants);
-    console.log('- Nombre de participants:', this.participants.length);
-
     this.participantsCount = this.participants.length;
     this.juryCount = this.juryMembers.length;
     this.status = results.status?.state;
-    console.log('🔵 Statut actuel:', this.status);
     this.formatedPeriod = this.convertToFormatedPeriod(results.period);
     this.period = results.period;
-    console.log('📅 Période:', {
-      start: this.period.startDate,
-      end: this.period.endDate,
-      now: new Date().toISOString(),
-    });
     this.loading = false;
     this.loadingStatus = false;
     this.loadingPeriod = false;
@@ -230,20 +268,20 @@ export class DashboardPage implements OnInit, OnDestroy {
     }
 
     if (this.status === 'EN_COURS') {
-      this.startCountdown(new Date(this.period.endDate));
+      this.countdownService.startCountdown(
+        new Date(this.period.endDate),
+        'Fin du Hackathon dans',
+        () => this.handleCountdownEnd()
+      );
       this.loadHackathonData();
     }
 
     if (this.status === 'EN_PREPARATION') {
-      console.log('📅 Période actuelle:', this.period);
       const startDate = new Date(this.period.startDate);
       const now = new Date();
-      console.log('⏰ Comparaison dates:', {
-        startDate: startDate.toISOString(),
-        now: now.toISOString(),
-        difference: (startDate.getTime() - now.getTime()) / 1000 / 60 + ' minutes',
-      });
-      this.startCountdown(startDate);
+      this.countdownService.startCountdown(startDate, 'Le hackathon commence dans', () =>
+        this.handleCountdownEnd()
+      );
     }
 
     if (this.isReadyForPreparation()) {
@@ -259,11 +297,12 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   triggerEnCours(): void {
-    this.statusService.setEnCours().subscribe({
+    this.statusTransitionService.transitionToEnCours().subscribe({
       next: (response) => {
-        this.status = response.state;
-        this.countdown.title = 'Le hackathon se termine bientôt';
-        //this.startCountdown(new Date(this.period.endDate));
+        this.status = response.status.state;
+        this.teams = response.teams;
+        this.countdownService.updateTitle('Le hackathon se termine bientôt');
+        this.loadHackathonData();
       },
       error: (err) => {
         console.error('❌ Erreur lors de la mise à jour du statut vers EN_COURS:', err);
@@ -271,65 +310,61 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
-  // Compte à rebours
+  /**
+   * Démarre le compte à rebours vers une date cible.
+   * Met à jour l'affichage chaque seconde et gère la fin du compte à rebours.
+   * @param targetDate Date cible du compte à rebours
+   * @deprecated Utiliser CountdownService.startCountdown()
+   */
   private startCountdown(targetDate: Date): void {
-    this.clearCountdownInterval();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = targetDate.getTime() - now;
-
-      if (distance < 0) {
-        this.countdown.hadEnded = true;
-        this.resetCountdownDisplay();
-        this.clearCountdownInterval();
-        this.handleCountdownEnd();
-        return;
-      }
-
-      this.updateCountdownDisplay(distance);
-      this.cdr.detectChanges();
-    };
-
-    updateCountdown();
-    this.countdownInterval = setInterval(updateCountdown, 1000);
+    // Déléguer au service
+    this.countdownService.startCountdown(targetDate, this.countdown.title, () =>
+      this.handleCountdownEnd()
+    );
   }
 
   private handleCountdownEnd(): void {
     if (this.status === 'EN_PREPARATION') {
-      this.transitionToEnCours();
+      this.statusTransitionService.transitionToEnCours().subscribe({
+        next: (response) => {
+          this.status = response.status.state;
+          this.teams = response.teams;
+          this.countdownService.updateTitle('Le hackathon a commencé');
+          this.loadHackathonData();
+        },
+        error: (err) => {
+          console.error('❌ Erreur lors de la transition vers EN_COURS:', err);
+        },
+      });
     } else if (this.status === 'EN_COURS') {
       this.transitionToTermine();
     }
   }
 
+  /**
+   * Gère la transition vers le statut EN_COURS.
+   * Génère les équipes avant de changer le statut et charge les données du hackathon.
+   * @deprecated Utiliser StatusTransitionService.transitionToEnCours()
+   */
   private transitionToEnCours(): void {
-    console.log('🔵 Transition vers EN_COURS...');
-    // D'abord générer les équipes avant de changer le statut
-    this.hackathonService.generate().subscribe({
-      next: (generateResponse) => {
-        this.teams = generateResponse.teams;
-
-        // Une fois les équipes générées, mettre à jour le statut
-        this.statusService.setEnCours().subscribe({
-          next: (statusResponse) => {
-            this.status = statusResponse.state;
-            this.countdown.title = 'Le hackathon a commencé';
-
-            // Charger les équipes et le membre du jury du hackathon
-            this.loadHackathonData();
-          },
-          error: (err) => {
-            console.error('❌ Erreur lors de la mise à jour du statut vers EN_COURS:', err);
-          },
-        });
+    // Déléguer au service
+    this.statusTransitionService.transitionToEnCours().subscribe({
+      next: (response) => {
+        this.status = response.status.state;
+        this.teams = response.teams;
+        this.countdownService.updateTitle('Le hackathon a commencé');
+        this.loadHackathonData();
       },
       error: (err) => {
-        console.error('❌ Erreur lors de la génération des équipes:', err);
+        console.error('❌ Erreur lors de la transition vers EN_COURS:', err);
       },
     });
   }
 
+  /**
+   * Charge les données du hackathon actuel.
+   * Récupère l'ID du hackathon depuis l'API HATEOAS et charge les équipes et le sujet.
+   */
   private loadHackathonData(): void {
     // Récupérer d'abord le hackathon actuel pour avoir son ID
     this.hackathonService.get().subscribe({
@@ -346,9 +381,6 @@ export class DashboardPage implements OnInit, OnDestroy {
           // Extraire l'ID du hackathon depuis l'URL (ex: "http://localhost:8080/hackathons/2/juryMember")
           const hackathonIdMatch = juryMemberLink.match(/\/hackathons\/(\d+)\//);
           this.currentHackathonId = hackathonIdMatch ? parseInt(hackathonIdMatch[1], 10) : null;
-
-          console.log('🎯 Hackathon actuel:', currentHackathon);
-          console.log('🎯 ID extrait du lien:', this.currentHackathonId);
 
           if (!this.currentHackathonId) {
             console.error("❌ Impossible d'extraire l'ID du hackathon depuis le lien");
@@ -377,7 +409,6 @@ export class DashboardPage implements OnInit, OnDestroy {
                   problem: juryMemberResponse.problem || '',
                   innovation: juryMemberResponse.innovation || '',
                 };
-                console.log('📋 Sujet du jury:', this.subject);
               }
               this.cdr.detectChanges();
             },
@@ -396,16 +427,23 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     // Démarrer le compte à rebours vers la fin
     if (this.period.endDate) {
-      this.startCountdown(new Date(this.period.endDate));
+      this.countdownService.startCountdown(
+        new Date(this.period.endDate),
+        'Fin du Hackathon dans',
+        () => this.handleCountdownEnd()
+      );
     }
   }
 
+  /**
+   * Gère la transition vers le statut TERMINE.
+   * Change le statut et planifie le nettoyage de fin de journée.
+   */
   private transitionToTermine(): void {
-    console.log('🔵 Transition vers TERMINE...');
-    this.statusService.setTermine().subscribe({
+    this.statusTransitionService.transitionToTermine().subscribe({
       next: (statusResponse) => {
         this.status = statusResponse.state;
-        this.countdown.title = 'Nettoyage dans';
+        this.countdownService.updateTitle('Nettoyage dans');
         this.scheduleEndOfDayCleanup();
         this.cdr.detectChanges();
       },
@@ -417,49 +455,38 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   /**
    * Réinitialise l'affichage du compte à rebours à zéro
+   * @deprecated Utiliser CountdownService.resetCountdown()
    */
   private resetCountdownDisplay(): void {
-    this.countdown = {
-      title: 'Le hackathon commence bientôt',
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    };
+    this.countdownService.resetCountdown();
   }
 
   /**
    * Met à jour l'affichage du compte à rebours avec la distance temporelle
    * @param distance - Distance en millisecondes jusqu'à la date cible
+   * @deprecated Géré automatiquement par CountdownService
    */
   private updateCountdownDisplay(distance: number): void {
-    const { days, hours, minutes, seconds } = calculateTimeComponents(distance);
-
-    this.countdown = {
-      title: this.countdown.title,
-      days,
-      hours,
-      minutes,
-      seconds,
-    };
+    // Plus nécessaire, géré par le service
   }
 
   /**
    * Arrête et nettoie l'intervalle du compte à rebours
+   * @deprecated Utiliser CountdownService.stopCountdown()
    */
   clearCountdownInterval(): void {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-      this.countdownInterval = null;
-    }
+    this.countdownService.stopCountdown();
   }
 
+  /**
+   * Déclenche le passage en mode préparation.
+   * Change le statut vers EN_PREPARATION et crée la période de test.
+   */
   triggerPreparation(): void {
-    console.log('🔵 Déclenchement de la préparation...');
-    this.statusService.setEnPreparation().subscribe({
+    this.statusTransitionService.transitionToPreparation().subscribe({
       next: (response) => {
         this.status = response.state;
-        this.countdown.title = 'Le hackathon commence bientôt';
+        this.countdownService.updateTitle('Le hackathon commence bientôt');
         this.createAndUpdatePeriod();
       },
       error: (err) => {
@@ -468,6 +495,10 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Crée et met à jour la période de test du hackathon.
+   * Génère des dates de début et fin avec offsets configurables pour les tests.
+   */
   createAndUpdatePeriod(): void {
     // Utiliser UTC+1 (ajouter 1 heure = 3600000 ms)
     const nowTimestamp = Date.now() + 3600000;
@@ -478,37 +509,21 @@ export class DashboardPage implements OnInit, OnDestroy {
       nowTimestamp + DASHBOARD_CONSTANTS.TEST_END_OFFSET_MINUTES * 60000
     );
 
-    console.log('📅 Création de la période de test:', {
-      start: now5MinLater.toISOString(),
-      end: now10MinLater.toISOString(),
-      now: new Date(nowTimestamp).toISOString(),
-      startOffset: DASHBOARD_CONSTANTS.TEST_START_OFFSET_MINUTES,
-      endOffset: DASHBOARD_CONSTANTS.TEST_END_OFFSET_MINUTES,
-    });
-
     const testPeriod: Period = {
       id: DASHBOARD_CONSTANTS.DEFAULT_PERIOD_ID,
       startDate: now5MinLater.toISOString(),
       endDate: now10MinLater.toISOString(),
     };
 
-    console.log('📤 Envoi de la période au backend:', testPeriod);
-
     this.periodService.update(DASHBOARD_CONSTANTS.DEFAULT_PERIOD_ID, testPeriod).subscribe({
       next: (periodResponse) => {
-        console.log('📥 Période reçue du backend:', {
-          id: periodResponse.id,
-          startDate: periodResponse.startDate,
-          endDate: periodResponse.endDate,
-          fullResponse: periodResponse,
-        });
         this.period = periodResponse;
         this.formatedPeriod = this.convertToFormatedPeriod(periodResponse);
-        console.log(
-          '🚀 Démarrage du countdown vers:',
-          new Date(periodResponse.startDate).toISOString()
+        this.countdownService.startCountdown(
+          new Date(periodResponse.startDate),
+          'Le hackathon commence dans',
+          () => this.handleCountdownEnd()
         );
-        this.startCountdown(new Date(periodResponse.startDate));
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -551,6 +566,11 @@ export class DashboardPage implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Vérifie si toutes les conditions sont remplies pour passer en préparation.
+   * Vérifie le statut, le nombre de participants/jury et le délai depuis le dernier hackathon.
+   * @returns true si prêt pour la préparation
+   */
   isReadyForPreparation(): boolean {
     if (this.status !== 'EN_ATTENTE') {
       return false;
@@ -600,7 +620,8 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Planifie le nettoyage des données du hackathon à minuit
+   * Planifie le nettoyage des données du hackathon à minuit.
+   * Démarre un compte à rebours et vérifie périodiquement si l'heure est atteinte.
    */
   private scheduleEndOfDayCleanup(): void {
     // Calculer le temps jusqu'à minuit
@@ -631,11 +652,10 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.clearCleanupInterval();
 
     // Remettre le statut à EN_ATTENTE d'abord, puis supprimer les données
-    this.statusService.setEnAttente().subscribe({
+    this.statusTransitionService.transitionToEnAttente().subscribe({
       next: (response) => {
         this.status = response.state;
-        this.countdown.title = 'Le hackathon commence bientôt';
-        this.resetCountdownDisplay();
+        this.countdownService.resetCountdown('Le hackathon commence bientôt');
 
         // Maintenant que le statut est changé, supprimer toutes les données
         this.deleteAllHackathonData();
@@ -649,12 +669,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Supprime toutes les données du hackathon (hackathon, équipes, jury, participants)
-   * Respecte l'ordre des contraintes d'intégrité référentielle :
-   * 1. Hackathon (référence JuryMember)
-   * 2. Équipes (référence Participants)
-   * 3. Membres du jury
-   * 4. Participants
+   * Supprime toutes les données du hackathon dans le bon ordre.
+   * Respecte les contraintes d'intégrité référentielle de la base de données.
+   * Ordre : Hackathon -> Équipes -> Jury -> Participants
    */
   private deleteAllHackathonData(): void {
     // Étape 1 : Supprimer le hackathon en premier (référence jury member)
@@ -701,7 +718,6 @@ export class DashboardPage implements OnInit, OnDestroy {
         });
       },
       error: (err: any) => {
-        console.error('❌ Erreur lors de la suppression du hackathon:', err);
         this.cdr.detectChanges();
       },
     });
@@ -718,8 +734,8 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Démarre la vérification périodique pour passer en préparation
-   * Vérifie toutes les 5 secondes si les conditions sont remplies
+   * Démarre la vérification périodique du statut.
+   * Vérifie toutes les 5 secondes si les conditions pour passer en préparation sont remplies.
    */
   private startStatusCheckInterval(): void {
     this.clearStatusCheckInterval();
@@ -760,9 +776,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
           this.cdr.detectChanges();
         },
-        error: (err) => {
-          console.error('❌ Erreur lors de la vérification du statut:', err);
-        },
+        error: (err) => {},
       });
     }, DASHBOARD_CONSTANTS.STATUS_CHECK_INTERVAL_MS);
   }

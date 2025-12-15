@@ -7,9 +7,17 @@ import {
   SubjectService,
   StatusService,
   EmailService,
+  FormValidationService,
+  SkillsService,
+  PayloadBuilderService,
 } from '../../services';
 import { Subject } from '../../interfaces/intefaces';
 
+/**
+ * Page d'inscription pour les participants et membres du jury au hackathon.
+ * Permet l'inscription avec sélection de compétences et de sujets.
+ * Gère l'état du hackathon et adapte le formulaire en conséquence.
+ */
 @Component({
   selector: 'app-register-page',
   imports: [ReactiveFormsModule, CommonModule],
@@ -17,15 +25,34 @@ import { Subject } from '../../interfaces/intefaces';
   styleUrl: './register-page.css',
 })
 export class RegisterPage implements OnInit {
+  /** Formulaire réactif pour l'inscription */
   form: FormGroup;
+
+  /** Indicateur de chargement */
   loading = false;
+
+  /** Message d'erreur à afficher */
   error: string | null = null;
+
+  /** Indicateur de succès de l'inscription */
   success = false;
+
+  /** Indicateur si le formulaire a été soumis */
   submitted = false;
+
+  /** Liste des sujets disponibles pour le hackathon */
   availableSubject: Subject[] = [];
+
+  /** Détails du sujet sélectionné */
   selectedIssueDetails: Subject | null = null;
+
+  /** Statut actuel du hackathon (EN_ATTENTE, EN_PREPARATION, EN_COURS, TERMINE) */
   hackathonStatus: string | null = null;
+
+  /** Indicateur si les inscriptions sont fermées */
   registrationClosed = false;
+
+  /** Détails de la compétence sélectionnée */
   selectedSkillDetails: {
     value: string;
     option: string;
@@ -33,68 +60,42 @@ export class RegisterPage implements OnInit {
     descriptions: string[];
   } | null = null;
 
-  skillsInfo: {
-    [key: string]: { value: string; option: string; title: string; descriptions: string[] };
-  } = {
-    Développeur: {
-      value: 'Développeur',
-      option: 'Développeur',
-      title: 'Développeur',
-      descriptions: [
-        'Maîtrise des langages comme Java, Python, JavaScript, etc.',
-        'Capacité à coder rapidement et à résoudre des problèmes techniques.',
-      ],
-    },
-    Designer: {
-      value: 'Designer',
-      option: 'Designer',
-      title: 'Designer',
-      descriptions: [
-        'Créent des interfaces intuitives et attractives.',
-        "Pensent l'expérience utilisateur pour rendre le projet crédible et utilisable.",
-      ],
-    },
-    'Chef de projet': {
-      value: 'Chef de projet',
-      option: 'Chef de projet',
-      title: 'Chef de projet',
-      descriptions: [
-        "Structurent l'idée, définissent la vision et la stratégie.",
-        'Assurent la cohérence entre innovation et faisabilité.',
-      ],
-    },
-    Communicant: {
-      value: 'Communicant',
-      option: 'Communicant',
-      title: 'Communicant',
-      descriptions: [
-        'Pitchent le projet devant le jury.',
-        'Valorisation de la solution et storytelling pour convaincre.',
-      ],
-    },
-  };
-
   constructor(
     private fb: FormBuilder,
     private participantService: ParticipantService,
     private juryMemberService: JuryMemberService,
     private subjectService: SubjectService,
     private statusService: StatusService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private formValidationService: FormValidationService,
+    private skillsService: SkillsService,
+    private payloadBuilderService: PayloadBuilderService
   ) {
     this.form = this.createForm();
   }
 
+  /**
+   * Initialise le composant au chargement.
+   * Vérifie le statut du hackathon, charge les sujets disponibles et configure les listeners.
+   */
   ngOnInit(): void {
     this.checkHackathonStatus();
     this.loadAvailableIssues();
     this.setupFormListeners();
   }
 
+  /**
+   * Retourne la liste des compétences sous forme de tableau.
+   * @returns Liste des compétences disponibles
+   */
   get skillsList() {
-    return Object.values(this.skillsInfo);
+    return this.skillsService.getAllSkills();
   }
 
+  /**
+   * Crée et configure le formulaire réactif avec toutes les validations.
+   * @returns FormGroup configuré avec les champs et validateurs
+   */
   private createForm(): FormGroup {
     return this.fb.group(
       {
@@ -111,30 +112,14 @@ export class RegisterPage implements OnInit {
         problem: [''],
         innovation: [''],
       },
-      { validators: this.emailMatchValidator }
+      { validators: this.formValidationService.emailMatchValidator }
     );
   }
 
-  private emailMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
-    const email = group.get('email')?.value;
-    const emailConfirm = group.get('emailConfirm')?.value;
-
-    if (email && emailConfirm && email !== emailConfirm) {
-      group.get('emailConfirm')?.setErrors({ emailMismatch: true });
-      return { emailMismatch: true };
-    }
-
-    return null;
-  }
-
-  private hasIdeaValidator(control: any): { [key: string]: boolean } | null {
-    const value = control.value;
-    if (value === 'none' || !value) {
-      return { required: true };
-    }
-    return null;
-  }
-
+  /**
+   * Configure les listeners pour les changements de valeurs du formulaire.
+   * Écoute les changements de rôle et d'idée pour adapter le formulaire.
+   */
   private setupFormListeners(): void {
     this.form.get('role')?.valueChanges.subscribe((role) => {
       this.handleRoleChange(role);
@@ -145,6 +130,10 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  /**
+   * Vérifie le statut actuel du hackathon depuis l'API.
+   * Détermine si les inscriptions sont ouvertes ou fermées.
+   */
   private checkHackathonStatus(): void {
     this.statusService.getCurrent().subscribe({
       next: (status) => {
@@ -165,11 +154,16 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  /**
+   * Gère le changement de rôle (participant/jury) dans le formulaire.
+   * Adapte les validateurs et les champs requis en fonction du rôle.
+   * @param role Le rôle sélectionné ('participant' ou 'jury')
+   */
   private handleRoleChange(role: string): void {
     if (role === 'jury') {
       this.form.get('skill')?.setValue('');
       this.form.get('skill')?.clearValidators();
-      this.form.get('hasIdea')?.setValidators([this.hasIdeaValidator.bind(this)]);
+      this.form.get('hasIdea')?.setValidators([this.formValidationService.hasIdeaValidator]);
       this.selectedSkillDetails = null;
     } else if (role === 'participant') {
       this.form.get('skill')?.setValidators([Validators.required]);
@@ -180,17 +174,27 @@ export class RegisterPage implements OnInit {
     this.form.get('hasIdea')?.updateValueAndValidity();
   }
 
+  /**
+   * Gère la sélection d'une compétence.
+   * Met à jour les détails affichés pour la compétence sélectionnée.
+   * @param event L'événement de sélection
+   */
   onSkillSelected(event: Event): void {
     const target = event.target as HTMLSelectElement;
     const skillValue = target.value;
 
-    if (skillValue && this.skillsInfo[skillValue]) {
-      this.selectedSkillDetails = this.skillsInfo[skillValue];
+    if (skillValue) {
+      this.selectedSkillDetails = this.skillsService.getSkillInfo(skillValue);
     } else {
       this.selectedSkillDetails = null;
     }
   }
 
+  /**
+   * Gère le changement d'option pour l'idée (aucune/adopter/proposer).
+   * Configure les validateurs appropriés selon l'option choisie.
+   * @param hasIdea L'option sélectionnée ('none', 'adopt', 'propose')
+   */
   private handleIdeaOptionChange(hasIdea: string): void {
     if (hasIdea === 'none' || hasIdea === 'adopt') {
       this.clearIdeaFields();
@@ -237,6 +241,10 @@ export class RegisterPage implements OnInit {
     this.selectedIssueDetails = null;
   }
 
+  /**
+   * Gère la soumission du formulaire d'inscription.
+   * Valide les données, crée le participant/jury et envoie l'email de confirmation.
+   */
   onSubmit(): void {
     this.submitted = true;
 
@@ -274,6 +282,11 @@ export class RegisterPage implements OnInit {
     }
   }
 
+  /**
+   * Envoie une notification par email après inscription.
+   * Le type d'email dépend du statut actuel du hackathon.
+   * @param email L'adresse email du destinataire
+   */
   private sendEmailNotification(email: string): void {
     if (!this.hackathonStatus) {
       console.warn('⚠️ Statut du hackathon non défini, email non envoyé');
@@ -284,7 +297,6 @@ export class RegisterPage implements OnInit {
     this.emailService.sendRegistrationEmail(email, this.hackathonStatus).subscribe({
       next: () => {
         const emailType = this.hackathonStatus === 'EN_ATTENTE' ? 'pré-invitation' : 'invitation';
-        console.log(`✉️ Email de ${emailType} envoyé à:`, email);
         this.handleSubmitSuccess();
       },
       error: (err: any) => {
@@ -295,28 +307,14 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  /**
+   * Construit le payload pour l'API selon le rôle.
+   * Inclut toutes les données du formulaire nécessaires à la création.
+   * @param role Le rôle sélectionné ('participant' ou 'jury')
+   * @returns Objet contenant les données formatées pour l'API
+   */
   private buildPayload(role: string): any {
-    const { firstName, lastName, email, skill, title, description, problem, innovation } =
-      this.form.value;
-
-    if (role === 'participant') {
-      return {
-        firstName,
-        lastName,
-        email,
-        skill: skill || [],
-      };
-    }
-
-    return {
-      firstName,
-      lastName,
-      email,
-      title,
-      description,
-      problem,
-      innovation,
-    };
+    return this.payloadBuilderService.buildPayload(this.form, role);
   }
 
   private handleSubmitSuccess(): void {
@@ -370,7 +368,6 @@ export class RegisterPage implements OnInit {
 
   private handleIssuesLoaded(response: any): void {
     const subjects = response._embedded?.subjectEntities || [];
-    console.log(subjects);
 
     this.availableSubject = subjects.map((subject: Subject) => this.mapSubjectToIssue(subject));
   }
