@@ -32,7 +32,7 @@ export class HackathonService {
   }
 
   /** Récupère le membre du jury d'un hackathon */
-  getJuryMember(hackathonId: number): Observable<any> {
+  getJuryMember(hackathonId: number | null): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/${hackathonId}/juryMember`);
   }
 
