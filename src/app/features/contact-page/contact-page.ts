@@ -31,28 +31,17 @@ export class ContactPage {
 
     if (this.form.invalid) {
       this.error = 'Veuillez remplir tous les champs avant de soumettre.';
-      this.success = false;
       return;
     }
 
-    this.loading = true;
+    const subject = encodeURIComponent(this.form.value.subject);
+    const message = encodeURIComponent(this.form.value.message);
 
-    const url = `${environment.apiUrl}/contact`;
+    const mailtoUrl = `mailto:hackathonhn@gmail.com?subject=${subject}&body=${message}`;
 
-    this.http.post(url, this.form.value).subscribe({
-      next: () => {
-        this.success = true;
-        this.loading = false;
-        this.form.reset();
-        this.submitted = false;
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
-        this.success = false;
-        this.loading = false;
-      },
-    });
+    window.location.href = mailtoUrl;
   }
+
 
   isFieldInvalid(field: string): boolean {
     const control = this.form.get(field);
