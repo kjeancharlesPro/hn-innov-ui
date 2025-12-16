@@ -2,30 +2,33 @@
   class="sticky top-0 z-20 flex items-center justify-between bg-background-dark/80 px-6 py-4 backdrop-blur-sm border-b border-white/10"
 >
   <div class="flex items-center gap-3">
-    <a routerLink="/" class="logo-container group">
-      <h1 class="text-2xl font-bold tracking-tight flex items-center justify-center font-display">
-        <span class="logo-bracket text-4xl">&#60;</span>
-        <span class="logo-letter text-4xl">H</span>
-        <span class="logo-text">ackatho</span>
-        <span class="logo-letter text-4xl">N</span>
-        <span class="logo-bracket text-4xl">/</span>
-        <span class="logo-bracket text-4xl">&#62;</span>
+    <a routerLink="/" class="px-4 py-2 rounded-md bg-hn logo-link">
+      <h1
+        class="text-3xl font-bold tracking-tight flex items-center justify-center font-display relative"
+      >
+        <span class="logo-default">
+          <span class="logo-bracket text-3xl">&#60;</span>
+          <span class="logo-letter text-3xl">H</span>
+          <span class="logo-letter text-3xl">N</span>
+          <span class="logo-bracket text-3xl">/</span>
+          <span class="logo-bracket text-3xl">&#62;</span>
+        </span>
       </h1>
     </a>
   </div>
   <nav class="hidden md:flex items-center gap-6">
-    <a class="text-white/80 hover:text-white transition-colors" routerLink="/">Accueil</a>
-    <a class="text-white/80 hover:text-white transition-colors" routerLink="/reglement"
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/">Accueil</a>
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/reglement"
       >Règlement</a
     >
 
-    <a class="text-white/80 hover:text-white transition-colors" routerLink="/inscription"
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/inscription"
       >S'inscrire</a
     >
-    <a class="text-white/80 hover:text-white transition-colors" routerLink="/boite-a-idees"
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/boite-a-idees"
       >Proposer une idée</a
     >
-    <a class="text-white/80 hover:text-white transition-colors" routerLink="/dashboard"
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/dashboard"
       >Suivre le Hackathon</a
     >
 
