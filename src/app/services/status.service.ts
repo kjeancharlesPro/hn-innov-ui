@@ -4,12 +4,20 @@ import { Observable } from 'rxjs';
 import { environment } from '../env/env.dev';
 import type { HackathonStatus } from '../features/dashboard-page/dashboard-page.utils';
 
+/**
+ * Interface représentant le statut du hackathon.
+ */
 export interface Status {
+  /** ID du statut */
   id?: number;
+  /** État actuel du hackathon */
   state: HackathonStatus;
 }
 
-/** Service pour gérer les appels API relatifs au statut du hackathon */
+/**
+ * Service pour gérer le statut du hackathon.
+ * Permet de récupérer et modifier l'état du hackathon (EN_ATTENTE, EN_PREPARATION, EN_COURS, TERMINE).
+ */
 @Injectable({
   providedIn: 'root',
 })

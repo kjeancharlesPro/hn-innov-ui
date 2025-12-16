@@ -29,8 +29,6 @@ export class SubjectPage {
   onSubmit() {
     this.submitted = true;
 
-    console.log('oui');
-
     if (this.form.invalid) {
       this.error = 'Veuillez corriger les erreurs dans le formulaire avant de soumettre à nouveau.';
       this.success = false;
@@ -60,8 +58,6 @@ export class SubjectPage {
         this.submitted = false;
         // Auto close after 3 seconds with fade out
         this.autoCloseAlert('success', 3000);
-
-        console.log('oui');
       },
       error: (err) => {
         console.error("Erreur lors de l'inscription:", err);

@@ -1,9 +1,21 @@
-/** Utilitaires pour le Dashboard - gestion dates, formatage et calculs */
+/**
+ * Utilitaires pour le Dashboard du hackathon.
+ * Fonctions de gestion des dates, formatage et calculs pour le dashboard.
+ */
 
 import { Period } from '../../interfaces';
 import { Participant } from '../../services';
 
-/** Calcule les dates de la prochaine période (mercredi et vendredi à 14h30) */
+/**
+ * Calcule les dates de la prochaine période de hackathon.
+ * Le hackathon commence le mercredi à 14h30 et se termine le vendredi à 14h30.
+ *
+ * Règles :
+ * - Si lundi ou mardi : mercredi de cette semaine
+ * - Si mercredi, jeudi, vendredi, samedi ou dimanche : mercredi prochain
+ *
+ * @returns Objet Period avec les dates de début et fin au format ISO
+ */
 export function calculateNextPeriodDates(): Period {
   const now = new Date();
   const currentDay = now.getDay(); // 0 = dimanche, 1 = lundi, ..., 6 = samedi
@@ -42,13 +54,23 @@ export function calculateNextPeriodDates(): Period {
   };
 }
 
-/** Calcule le nombre de jours écoulés entre deux dates */
+/**
+ * Calcule le nombre de jours écoulés entre deux dates.
+ * @param startDate Date de début
+ * @param endDate Date de fin (par défaut: maintenant)
+ * @returns Nombre de jours écoulés (peut être décimal)
+ */
 export function calculateDaysSince(startDate: Date, endDate: Date = new Date()): number {
   const timeDiff = endDate.getTime() - startDate.getTime();
   return timeDiff / (1000 * 60 * 60 * 24);
 }
 
-/** Formate une date en composants jour et mois */
+/**
+ * Formate une date en composants jour et mois.
+ * @param date La date à formater
+ * @param locale La locale pour le formatage (par défaut: 'fr-FR')
+ * @returns Objet contenant le jour (numéro) et le mois (abréviation)
+ */
 export function formatDateComponents(
   date: Date,
   locale: string = 'fr-FR'
@@ -58,7 +80,11 @@ export function formatDateComponents(
   return { day, month };
 }
 
-/** Décompose une durée en jours, heures, minutes et secondes */
+/**
+ * Décompose une durée en millisecondes en composants lisibles.
+ * @param distance Durée en millisecondes
+ * @returns Objet contenant les jours, heures, minutes et secondes
+ */
 export function calculateTimeComponents(distance: number): {
   days: number;
   hours: number;

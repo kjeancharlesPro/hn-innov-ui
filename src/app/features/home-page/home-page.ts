@@ -218,7 +218,7 @@ export class HomePage {
         console.error('Erreur lors du chargement des idées:', error);
         this.subjects = [];
         this.isLoading = false;
-        console.log('isLoading après erreur =', this.isLoading);
+
         this.cdr.detectChanges();
       },
     });
