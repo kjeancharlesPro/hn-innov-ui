@@ -117,7 +117,6 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   private countdownInterval: any = null;
   private cleanupInterval: any = null;
-  private statusCheckInterval: any = null;
 
   // Subscriptions
   private sub: Subscription | null = null;
@@ -142,7 +141,6 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
     this.clearCountdownInterval();
     this.clearCleanupInterval();
-    this.clearStatusCheckInterval();
   }
 
   // API - Récupération des données
@@ -248,11 +246,6 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     if (this.isReadyForPreparation()) {
       this.triggerPreparation();
-    }
-
-    // Démarrer la vérification périodique si en attente
-    if (this.status === 'EN_ATTENTE') {
-      this.startStatusCheckInterval();
     }
 
     this.cdr.detectChanges();
@@ -714,66 +707,6 @@ export class DashboardPage implements OnInit, OnDestroy {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
-    }
-  }
-
-  /**
-   * Démarre la vérification périodique pour passer en préparation
-   * Vérifie toutes les 5 secondes si les conditions sont remplies
-   */
-  private startStatusCheckInterval(): void {
-    this.clearStatusCheckInterval();
-
-    this.statusCheckInterval = setInterval(() => {
-      // Recharger les données pour avoir les compteurs à jour
-      this.sub?.unsubscribe();
-
-      const requests = {
-        participantsList: this.getParticipantsList(),
-        juryMembersList: this.getJuryList(),
-        status: this.getStatus(),
-      };
-
-      this.sub = forkJoin(requests).subscribe({
-        next: (results) => {
-          const newParticipants = extractEntitiesList(
-            results.participantsList,
-            'participantEntities'
-          );
-          const newJuryMembers = extractEntitiesList(results.juryMembersList, 'juryMemberEntities');
-
-          this.participants = newParticipants;
-          this.juryMembers = newJuryMembers;
-          this.participantsCount = newParticipants.length;
-          this.juryCount = newJuryMembers.length;
-          this.status = results.status?.state;
-
-          // Si on n'est plus en attente, arrêter la vérification
-          if (this.status !== 'EN_ATTENTE') {
-            this.clearStatusCheckInterval();
-          }
-          // Si prêt pour la préparation, déclencher la transition
-          else if (this.isReadyForPreparation()) {
-            this.clearStatusCheckInterval();
-            this.triggerPreparation();
-          }
-
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('❌ Erreur lors de la vérification du statut:', err);
-        },
-      });
-    }, DASHBOARD_CONSTANTS.STATUS_CHECK_INTERVAL_MS);
-  }
-
-  /**
-   * Arrête et nettoie l'intervalle de vérification du statut
-   */
-  private clearStatusCheckInterval(): void {
-    if (this.statusCheckInterval) {
-      clearInterval(this.statusCheckInterval);
-      this.statusCheckInterval = null;
     }
   }
 }
