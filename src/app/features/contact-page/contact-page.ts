@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../env/env.dev';
@@ -20,13 +20,14 @@ export class ContactPage {
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.form = this.fb.group({
-      subject: [''],
-      message: [''],
+      subject: ['', Validators.required],
+      message: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
 
   onSubmit() {
     this.submitted = true;
+    this.error = null;
 
     if (this.form.invalid) {
       this.error = 'Veuillez remplir tous les champs avant de soumettre.';
@@ -35,7 +36,6 @@ export class ContactPage {
     }
 
     this.loading = true;
-    this.error = null;
 
     const url = `${environment.apiUrl}/contact`;
 
@@ -43,7 +43,6 @@ export class ContactPage {
       next: () => {
         this.success = true;
         this.loading = false;
-        this.error = null;
         this.form.reset();
         this.submitted = false;
       },
@@ -53,6 +52,15 @@ export class ContactPage {
         this.loading = false;
       },
     });
+  }
+
+  isFieldInvalid(field: string): boolean {
+    const control = this.form.get(field);
+    return !!(
+      control &&
+      control.invalid &&
+      (control.touched || this.submitted)
+    );
   }
 
   closeAlert(type: 'success' | 'error') {

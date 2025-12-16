@@ -70,18 +70,31 @@
                     type="text"
                     formControlName="subject"
                     placeholder="Sujet du message"
+                    [class.border-red-500]="isFieldInvalid('subject')"
+                    [class.ring-red-500/30]="isFieldInvalid('subject')"
                     class="form-input w-full rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 text-white placeholder:text-zinc-500 focus:outline-0 focus:border-accent focus:ring-accent/30"
-                />
+                    />
+
+                <p *ngIf="isFieldInvalid('subject')" class="text-red-400 text-xs mt-1">
+                    Le sujet est requis
+                </p>
             </label>
 
             <label class="flex flex-col">
                 <p class="text-zinc-300 text-sm font-medium pb-2">Message</p>
                 <textarea
-                formControlName="message"
-                placeholder="Décrivez votre problème ou question"
-                rows="4"
-                class="form-textarea w-full rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 text-white placeholder:text-zinc-500 focus:outline-0 focus:border-accent focus:ring-accent/30"
+                    formControlName="message"
+                    placeholder="Décrivez votre problème ou question"
+                    rows="4"
+                    [class.border-red-500]="isFieldInvalid('message')"
+                    [class.ring-red-500/30]="isFieldInvalid('message')"
+                    class="form-textarea w-full rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 text-white placeholder:text-zinc-500 focus:outline-0 focus:border-accent focus:ring-accent/30"
                 ></textarea>
+
+                <p *ngIf="isFieldInvalid('message')" class="text-red-400 text-xs mt-1">
+                    Le message est requis (minimum 10 caractères)
+                </p>
+
             </label>
 
             <div class="pt-4">
