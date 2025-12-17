@@ -254,37 +254,13 @@
               </span>
             </button>
             @if (item.isOpen) {
-              <div class="p-4 bg-white/[0.02] text-white/80">
-                {{ item.answer }}
-              </div>
+              <div class="p-4 bg-white/[0.02] text-white/80"
+                [innerHTML]="item.answer"
+              ></div>
             }
           </div>
         }
       </div>
-
-      <!-- <div class="space-y-4">
-        @for (faq of faqs; track $index) {
-        <div class="border border-white/10 rounded-xl overflow-hidden">
-          <button
-            (click)="toggleFaq($index)"
-            class="w-full p-4 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors text-left"
-          >
-            <span class="font-semibold text-lg">{{ faq.question }}</span>
-            <span
-              class="material-symbols-outlined text-2xl transition-transform"
-              [class.rotate-180]="faq.isOpen"
-            >
-              expand_more
-            </span>
-          </button>
-          @if (faq.isOpen) {
-          <div class="p-4 bg-white/[0.02] text-white/80">
-            {{ faq.answer }}
-          </div>
-          }
-        </div>
-        }
-      </div> -->
     </div>
 
     <!-- Footer du modal -->
