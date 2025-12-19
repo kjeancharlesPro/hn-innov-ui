@@ -13,14 +13,14 @@
           <button
             class="h-12 px-6 rounded-full bg-white text-background-dark font-bold transition-transform duration-200 active:scale-95 hover:bg-white/90"
           >
-            S'inscrire au Hackathon
+            S'inscrire
           </button>
         </a>
         <a routerLink="dashboard">
           <button
             class="h-12 px-6 rounded-full bg-white/10 text-white font-bold border border-white/20 transition-colors hover:bg-white/20"
           >
-            Suivre le Hackathon
+            Dashboard
           </button>
         </a>
       </div>
@@ -234,31 +234,31 @@
     <div class="modal-scroll p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
       <div class="space-y-4">
         @for (item of faqs; track $index) {
-          <!-- Section heading -->
-          <div *ngIf="item.type === 'section'" class="px-4 py-2 font-bold text-white/70 text-lg">
-            {{ item.title }}
-          </div>
+        <!-- Section heading -->
+        <div *ngIf="item.type === 'section'" class="px-4 py-2 font-bold text-white/70 text-lg">
+          {{ item.title }}
+        </div>
 
-          <!-- FAQ item -->
-          <div *ngIf="item.type === 'faq'" class="border border-white/10 rounded-xl overflow-hidden">
-            <button
-              (click)="toggleFaq($index)"
-              class="w-full p-4 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors text-left"
+        <!-- FAQ item -->
+        <div *ngIf="item.type === 'faq'" class="border border-white/10 rounded-xl overflow-hidden">
+          <button
+            (click)="toggleFaq($index)"
+            class="w-full p-4 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors text-left"
+          >
+            <span class="font-semibold text-lg">{{ item.question }}</span>
+            <span
+              class="material-symbols-outlined text-2xl transition-transform"
+              [class.rotate-180]="item.isOpen"
             >
-              <span class="font-semibold text-lg">{{ item.question }}</span>
-              <span
-                class="material-symbols-outlined text-2xl transition-transform"
-                [class.rotate-180]="item.isOpen"
-              >
-                expand_more
-              </span>
-            </button>
-            @if (item.isOpen) {
-              <div class="p-4 bg-white/[0.02] text-white/80">
-                {{ item.answer }}
-              </div>
-            }
+              expand_more
+            </span>
+          </button>
+          @if (item.isOpen) {
+          <div class="p-4 bg-white/[0.02] text-white/80">
+            {{ item.answer }}
           </div>
+          }
+        </div>
         }
       </div>
 
