@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://hn-innov-api.fly.dev',
+  apiUrl: 'http://13.51.70.120:8080',
 };
