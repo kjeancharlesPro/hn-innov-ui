@@ -63,7 +63,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Comment puis-je m'inscrire au hackathon ?",
-      answer: "via la site en suivant en remplissant le formulaire d’inscription HackathoN.",
+      answer: "En vous rendant sur le site et en remplissant le formulaire d’inscription au hackathon.",
       isOpen: false,
     },
     {
@@ -102,7 +102,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Puis-je dormir sur place pendant le hackathon ?",
-      answer: "Non.",
+      answer: "Non, ce n'est pas possible.",
       isOpen: false,
     },
     {
@@ -123,25 +123,25 @@ export class HomePage {
     {
       type: 'faq',
       question: "Puis-je utiliser des bibliothèques, frameworks ou outils existants ?",
-      answer: "Oui.",
+      answer: "Oui, vous pouvez.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Y a-t-il des restrictions sur les technologies ou les outils à utiliser ?",
-      answer: "Non.",
+      answer: "Non, il n'y a pas de restrictions.",
       isOpen: false,
     },
     {
       type: 'faq',
-      question: "Dois-je présenter un projet fonctionnel ou un prototype ?",
-      answer: "Au choix.",
+      question: "Quels sont les livrables attendus ?",
+      answer: "Au choix.<br><strong>Projet fonctionnel :</strong> une solution qui fonctionne réellement (code exécutable, fonctionnalités opérationnelles), même si elle est partielle.<br><strong>Prototype :</strong> une maquette ou démonstration du concept (UX, parcours utilisateur, écrans, schémas), sans forcément de logique métier complète.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Combien de temps aurai-je pour présenter mon projet ?",
-      answer: "15 minutes.",
+      answer: "La présentation durera 15 minutes.",
       isOpen: false,
     },
 
@@ -150,13 +150,13 @@ export class HomePage {
     {
       type: 'faq',
       question: "Quels sont les prix à gagner ?",
-      answer: "Goodies, Trophée.",
+      answer: "Des Goodies, Trophée.",
       isOpen: false,
     },
     {
       type: 'faq',
       question: "Comment les gagnants seront-ils sélectionnés ?",
-      answer: "Vote du jury.",
+      answer: "Par vote du jury.",
       isOpen: false,
     },
 
@@ -174,7 +174,7 @@ export class HomePage {
     {
       type: 'faq',
       question: "Qui puis-je contacter en cas de questions ou de problèmes pendant le hackathon ?",
-      answer: "Pour toute question ou problème pendant le hackathon, vous pouvez nous contacter par e-mail.",
+      answer: 'Pour toute question ou problème pendant le hackathon, vous pouvez nous contacter par e-mail : <a href="mailto:hackathonhn@gmail.com" class="text-primary underline hover:text-primary/80">hackathonhn@gmail.com</a>.',
       isOpen: false,
     },
   ];
