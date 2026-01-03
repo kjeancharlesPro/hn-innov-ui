@@ -250,28 +250,12 @@
               class="material-symbols-outlined text-2xl transition-transform"
               [class.rotate-180]="item.isOpen"
             >
-<<<<<<< HEAD
               expand_more
             </span>
           </button>
           @if (item.isOpen) {
           <div class="p-4 bg-white/[0.02] text-white/80">
             {{ item.answer }}
-=======
-              <span class="font-semibold text-lg">{{ item.question }}</span>
-              <span
-                class="material-symbols-outlined text-2xl transition-transform"
-                [class.rotate-180]="item.isOpen"
-              >
-                expand_more
-              </span>
-            </button>
-            @if (item.isOpen) {
-              <div class="p-4 bg-white/[0.02] text-white/80"
-                [innerHTML]="item.answer"
-              ></div>
-            }
->>>>>>> c7ebc44af66d6d345892704c68c40e2630bdedac
           </div>
           }
         </div>
