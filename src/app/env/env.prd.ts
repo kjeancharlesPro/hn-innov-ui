@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://hn-innov-api.fly.dev',
+  apiUrl: 'https://hn-innov-api-dmaspw.fly.dev/',
 };
