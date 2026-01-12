@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   ParticipantService,
@@ -61,6 +62,7 @@ export class RegisterPage implements OnInit {
   } | null = null;
 
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private participantService: ParticipantService,
     private juryMemberService: JuryMemberService,
@@ -104,7 +106,7 @@ export class RegisterPage implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         emailConfirm: ['', [Validators.required, Validators.email]],
         role: ['participant', Validators.required],
-        hasIdea: ['none'],
+        hasIdea: [this.availableSubject.length > 0 ? 'none' : 'propose'],
         skill: ['', Validators.required],
         selectedIssue: [''],
         title: [''],
@@ -271,12 +273,18 @@ export class RegisterPage implements OnInit {
 
     if (role === 'jury') {
       this.juryMemberService.create(payload).subscribe({
-        next: () => this.sendEmailNotification(email),
+        next: () => {
+          this.sendEmailNotification(email);
+          this.router.navigate(['/']);
+        },
         error: (err: any) => this.handleSubmitError(err),
       });
     } else {
       this.participantService.create(payload).subscribe({
-        next: () => this.sendEmailNotification(email),
+        next: () => {
+          this.sendEmailNotification(email);
+          this.router.navigate(['/']);
+        },
         error: (err: any) => this.handleSubmitError(err),
       });
     }
