@@ -187,7 +187,8 @@
             </label>
             <label
               class="flex items-center p-3 h-12 rounded-lg bg-zinc-900/50 border border-zinc-700 cursor-pointer has-[:checked]:border-accent has-[:checked]:ring-2 has-[:checked]:ring-accent/30"
-            >
+              *ngIf="availableSubject.length > 0"
+              >
               <input
                 formControlName="hasIdea"
                 name="hasIdea"
